@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Luogo {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	@Column(nullable = false)
 	@NonNull
@@ -41,7 +41,7 @@ public class Luogo {
 	@Column(nullable = false)
 	@NonNull
 	private String nazionalita;
-	@Column(columnDefinition = "boolean default false")
+	@Column(nullable = false)
 	private boolean isCancellato;
 	@OneToMany(mappedBy = "luogo")
 	private List<Evento> eventi;
