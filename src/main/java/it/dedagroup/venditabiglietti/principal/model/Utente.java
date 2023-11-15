@@ -54,6 +54,7 @@ public class Utente {
 	@OneToMany(mappedBy = "utente")
 	private List<Manifestazione> manifestazioni;
 	@Version
+	@Column(nullable = false, columnDefinition = "BIGINT DEFAULT 1")
 	private long version;
 
 }
