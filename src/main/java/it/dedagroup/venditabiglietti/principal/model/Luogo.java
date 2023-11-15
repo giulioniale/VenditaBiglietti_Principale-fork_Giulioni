@@ -45,7 +45,7 @@ public class Luogo {
 	private boolean isCancellato;
 	@OneToMany(mappedBy = "luogo")
 	private List<Evento> eventi;
-	@OneToMany(mappedBy = "settore")
+	@OneToMany(mappedBy = "luogo")
 	private List<Settore> settori;
 	@Version
 	private long version;

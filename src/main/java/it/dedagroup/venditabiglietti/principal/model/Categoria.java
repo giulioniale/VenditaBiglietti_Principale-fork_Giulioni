@@ -30,7 +30,7 @@ public class Categoria {
 	private String nome;
 	@Column(nullable = false)
 	private boolean isCancellato = true;
-	@OneToMany(mappedBy = "manifestazione")
+	@OneToMany(mappedBy = "categoria")
 	private List<Manifestazione> manifestazioni;
 	@Version
 	private long version;
