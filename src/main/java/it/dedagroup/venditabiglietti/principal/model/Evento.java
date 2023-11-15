@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -30,7 +31,10 @@ public class Evento {
 	private long id;
 	@Column(nullable = false)
 	@NonNull
-	private LocalDateTime dataOra;
+	private LocalDate data;
+	@Column(nullable = false)
+	@NonNull
+	private LocalTime ora;
 	@Column(nullable = false)
 	@NonNull
 	private String descrizione;
