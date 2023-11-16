@@ -12,5 +12,6 @@ public enum Ruolo {
 	CLIENTE("CLIENTE");
 	@Getter
 	private String ruolo;
+	public String toString(){return ruolo;}
 
 }
