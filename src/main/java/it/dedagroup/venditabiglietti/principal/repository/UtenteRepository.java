@@ -17,5 +17,6 @@ public interface UtenteRepository extends JpaRepository<Utente, Long>{
 	public Optional<Utente> findByNomeAndCognome(String nome, String cognome);
 	public Optional<Utente> findByRuolo(Ruolo ruolo);
 	public Optional<Utente> findByNomeAndCognomeAndIsCancellatoTrue(String nome, String cognome);
+	public Optional<Utente> findByEmail(String email);
 
 }
