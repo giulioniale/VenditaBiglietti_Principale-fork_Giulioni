@@ -3,6 +3,7 @@ package it.dedagroup.venditabiglietti.principal.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -92,5 +93,9 @@ public interface GeneralCallService {
 	
 	default <DTORequest,DTOResponse> DTOResponse callPut(String path,String auth,DTORequest e,Class<DTOResponse> classe) {
 		return call(HttpMethod.PUT, path, auth, e, classe);
+	}
+
+	default <DTORequest, DTOResponse> List<DTOResponse> callGetForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe){
+		return List.of(callGet(path, auth, e, classe));
 	}
 }
