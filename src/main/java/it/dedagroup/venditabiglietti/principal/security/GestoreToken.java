@@ -35,7 +35,6 @@ public class GestoreToken {
     public String generaToken(Utente u){
         long durata = 1000L * 60 * 60 * 24 * 90;
         return Jwts.builder().claims().add("ruolo", u.getRuolo())
-                .add("dataDiNascita", u.getDataDiNascita())
                 .add("telefono", u.getTelefono())
                 .subject(u.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -70,9 +69,6 @@ public class GestoreToken {
                 .toLocalDateTime();
     }
 
-    public LocalDate getDataDiNascita(String token){
-        return getValue(c->c.get("dataDiNascita", LocalDate.class), token);
-    }
     public String getTelefono(String token){
         return getValue(c->c.get("telefono", String.class), token);
     }
