@@ -1,10 +1,9 @@
 package it.dedagroup.venditabiglietti.principal.facade;
 
-import it.dedagroup.venditabiglietti.principal.DTO.request.AddManifestazioneDTORequest;
-import it.dedagroup.venditabiglietti.principal.DTO.response.LuogoDtoResponse;
-import it.dedagroup.venditabiglietti.principal.DTO.response.ManifestazioneDTOResponse;
+import it.dedagroup.venditabiglietti.principal.dto.request.AddManifestazioneDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.LuogoDtoResponse;
+import it.dedagroup.venditabiglietti.principal.dto.response.ManifestazioneDTOResponse;
 import it.dedagroup.venditabiglietti.principal.model.Categoria;
-import it.dedagroup.venditabiglietti.principal.model.Manifestazione;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import org.springframework.http.HttpStatusCode;
