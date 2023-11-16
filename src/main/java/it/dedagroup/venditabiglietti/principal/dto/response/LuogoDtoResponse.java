@@ -1,4 +1,4 @@
-package it.dedagroup.venditabiglietti.principal.DTO.response;
+package it.dedagroup.venditabiglietti.principal.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
