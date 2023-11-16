@@ -16,5 +16,6 @@ public interface UtenteServiceDef {
 	Utente modificaUtente(Utente utente);
 	Utente eliminaUtente(Utente utente);
 	Utente findByEmail(String email);
+	Utente login(String email,String password);
 
 }
