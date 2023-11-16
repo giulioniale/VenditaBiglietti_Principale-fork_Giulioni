@@ -45,7 +45,7 @@ public interface GeneralCallService {
 		}
 	}
 	
-	private<DTORequest> String convertToJson(DTORequest e) {
+	default<DTORequest> String convertToJson(DTORequest e) {
 		try {
 			return getMapper().writeValueAsString(e);
 		} catch (JsonProcessingException e1) {
