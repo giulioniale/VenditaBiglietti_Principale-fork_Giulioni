@@ -65,4 +65,13 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 		return utenteRepository.save(utente);
 	}
 
+	@Override
+	public Utente findByEmail(String email) {
+		return utenteRepository.findByEmail(email).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con questa email."));
+	}
+	@Override
+	public Utente login(String email,String password){
+		return utenteRepository.findByEmailAndPassword(email,password).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nessun utente trovato con queste credenziali"));
+	}
+
 }
