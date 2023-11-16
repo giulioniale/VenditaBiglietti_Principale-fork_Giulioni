@@ -15,5 +15,6 @@ public interface UtenteServiceDef {
 	void aggiungiUtente(Utente utente);
 	Utente modificaUtente(Utente utente);
 	Utente eliminaUtente(Utente utente);
+	Utente findByEmail(String email);
 
 }
