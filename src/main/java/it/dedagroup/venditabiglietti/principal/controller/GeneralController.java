@@ -5,6 +5,7 @@ import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.facade.GeneralFacade;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.security.GestoreToken;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,13 @@ public class GeneralController {
     GestoreToken gestoreToken;
 
     @PostMapping("/registrazioneCliente")
-    public ResponseEntity<Void> registrazioneCliente(@RequestBody AggiungiUtenteDTORequest req){
+    public ResponseEntity<Void> registrazioneCliente(@Valid @RequestBody AggiungiUtenteDTORequest req){
         gFac.registrazioneCliente(req);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTORequest request){
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDTORequest request){
         Utente u=gFac.login(request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).header("Authorization",gestoreToken.generaToken(u)).body("Benvenuto!");
     }

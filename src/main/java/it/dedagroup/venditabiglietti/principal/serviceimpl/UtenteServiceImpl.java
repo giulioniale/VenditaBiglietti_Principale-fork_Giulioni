@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -48,6 +49,12 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public void aggiungiUtente(Utente utente) {
+		List<Utente> utenti = utenteRepository.findAll().stream().filter(u-> !u.isCancellato()).toList();
+		for(Utente u : utenti){
+			if(u.getEmail().equalsIgnoreCase(utente.getEmail())){
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già presente in db.");
+			}
+		}
 		utenteRepository.save(utente);
 		
 	}

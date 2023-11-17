@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 @RestControllerAdvice
 public class ExceptionHandlerCustom {
 
@@ -58,4 +60,5 @@ public class ExceptionHandlerCustom {
         error.setStatusCodeNumber(e.getStatusCode().value());
         return error;
     }
+
 }
