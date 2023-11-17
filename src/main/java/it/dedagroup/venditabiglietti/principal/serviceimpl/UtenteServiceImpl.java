@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -48,6 +49,12 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public void aggiungiUtente(Utente utente) {
+		List<Utente> utenti = utenteRepository.findAll().stream().filter(u-> !u.isCancellato()).toList();
+		for(Utente u : utenti){
+			if(u.getEmail().equalsIgnoreCase(utente.getEmail())){
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già presente in db.");
+			}
+		}
 		utenteRepository.save(utente);
 		
 	}
@@ -60,9 +67,10 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
-	public Utente eliminaUtente(Utente utente) {
-		utente.setCancellato(true);
-		return utenteRepository.save(utente);
+	public Utente eliminaUtente(long id) {
+		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		u.setCancellato(true);
+		return utenteRepository.save(u);
 	}
 
 	@Override
@@ -72,6 +80,11 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Override
 	public Utente login(String email,String password){
 		return utenteRepository.findByEmailAndPassword(email,password).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nessun utente trovato con queste credenziali"));
+	}
+
+	@Override
+	public Utente findById(long id) {
+		return utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
 	}
 
 }
