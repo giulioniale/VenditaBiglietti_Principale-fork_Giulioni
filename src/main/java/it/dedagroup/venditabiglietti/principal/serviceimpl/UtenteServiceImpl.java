@@ -60,9 +60,10 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
-	public Utente eliminaUtente(Utente utente) {
-		utente.setCancellato(true);
-		return utenteRepository.save(utente);
+	public Utente eliminaUtente(long id) {
+		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		u.setCancellato(true);
+		return utenteRepository.save(u);
 	}
 
 	@Override
@@ -72,6 +73,11 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Override
 	public Utente login(String email,String password){
 		return utenteRepository.findByEmailAndPassword(email,password).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nessun utente trovato con queste credenziali"));
+	}
+
+	@Override
+	public Utente findById(long id) {
+		return utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
 	}
 
 }
