@@ -14,8 +14,9 @@ public interface UtenteServiceDef {
 	Utente findByRuolo(Ruolo ruolo);
 	void aggiungiUtente(Utente utente);
 	Utente modificaUtente(Utente utente);
-	Utente eliminaUtente(Utente utente);
+	Utente eliminaUtente(long id);
 	Utente findByEmail(String email);
 	Utente login(String email,String password);
+	Utente findById(long id);
 
 }
