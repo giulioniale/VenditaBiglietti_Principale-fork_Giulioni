@@ -74,6 +74,7 @@ public class VenditoreFacade implements GeneralCallService{
         }
         vemDTO.setNomeManifestazione(m.getNome());
         vemDTO.setNomeOrganizzatore(m.getUtente().getNome());
+        vemDTO.setEventiManifestazione(map);
         return vemDTO;
     }
 
