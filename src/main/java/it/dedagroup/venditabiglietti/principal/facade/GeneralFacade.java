@@ -32,4 +32,5 @@ public class GeneralFacade {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Nessun utente trovato con queste credenziali");
         } else return uServ.login(request.getEmail(),request.getPassword());
     }
+
 }
