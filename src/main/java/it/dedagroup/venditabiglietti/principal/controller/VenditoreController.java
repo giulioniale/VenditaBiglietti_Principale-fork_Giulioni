@@ -30,8 +30,8 @@ public class VenditoreController {
 		return ResponseEntity.ok(vendFac.addEvento(eventoRequest));
 	}
 
-	@PostMapping("/evento/delete")
-	public ResponseEntity<EventoDTOResponse> deleteEvento(@PathVariable long idManifestazione){
+	@PostMapping("/evento/delete/{id}")
+	public ResponseEntity<EventoDTOResponse> deleteEvento(@PathVariable("id") long idManifestazione){
 		return ResponseEntity.ok(vendFac.deleteEvento(idManifestazione));
 	}
 
