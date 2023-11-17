@@ -36,5 +36,4 @@ public class PrezzoSettoreEvento {
 	private List<Biglietto> biglietti;
 	@Version
 	private long version;
-
 }
