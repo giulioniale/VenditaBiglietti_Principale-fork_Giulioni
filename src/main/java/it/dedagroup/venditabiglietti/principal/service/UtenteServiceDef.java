@@ -18,5 +18,7 @@ public interface UtenteServiceDef {
 	Utente findByEmail(String email);
 	Utente login(String email,String password);
 	Utente findById(long id);
+	String disattivaAdmin(long id);
+
 
 }
