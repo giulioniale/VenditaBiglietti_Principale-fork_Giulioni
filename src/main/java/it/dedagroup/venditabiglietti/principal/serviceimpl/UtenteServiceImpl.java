@@ -87,4 +87,16 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 		return utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
 	}
 
+	@Override
+	public String disattivaAdmin(long id) {
+		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		if (!u.getRuolo().equals(Ruolo.ADMIN)) {
+			throw new RuntimeException("l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
+		} else {
+			u.setRuolo(Ruolo.CLIENTE);
+			modificaUtente(u);
+		}
+		return u.getEmail();
+	}
+
 }
