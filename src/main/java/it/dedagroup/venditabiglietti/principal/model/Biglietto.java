@@ -42,5 +42,4 @@ public class Biglietto {
 	private PrezzoSettoreEvento prezzoSettoreEvento;
 	@Version
 	private long version;
-
 }
