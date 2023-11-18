@@ -116,7 +116,7 @@ public class VenditoreFacade implements GeneralCallService{
         List<LuogoMicroDTO> luoghiEvento = new ArrayList<>();
         List<PrezzoSettoreEventoMicroDTO> psePerEventi = new ArrayList<>();
 
-        eventiManifestazione.stream().forEach(evento -> {
+        eventiManifestazione.forEach(evento -> {
             luoghiEvento.add(callGet(LUOGO_PATH+"/find/id/"+evento.getIdLuogo(),null,null,LuogoMicroDTO.class));
             psePerEventi.add(callGet(PREZZO_SETTORE_EVENTO_PATH+"/find/evento/id"+evento.getId(),null,null, PrezzoSettoreEventoMicroDTO.class));
         });
@@ -125,7 +125,7 @@ public class VenditoreFacade implements GeneralCallService{
         //List<BigliettoMicroDTO> bigliettiPerPSE = new ArrayList<>();
         Map <Long, List<BigliettoMicroDTO>> bigliettiPerPSE = new HashMap<>();
         List<SettoreMicroDTO> settorePerPSE = new ArrayList<>();
-        psePerEventi.stream().forEach(prezzoSettoreEvento -> {
+        psePerEventi.forEach(prezzoSettoreEvento -> {
             bigliettiPerPSE.put(prezzoSettoreEvento.getIdEvento(), bigliettoServiceDef.findAllByIdPrezzoSettoreEventoOrderByPrezzoAsc(prezzoSettoreEvento.getIdEvento()));
             settorePerPSE.add(callGet(SETTORE_PATH+"/find/id/"+prezzoSettoreEvento.getIdSettore(),null,null,SettoreMicroDTO.class));
         });
