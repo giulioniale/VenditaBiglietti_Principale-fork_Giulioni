@@ -7,11 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiSettoreDtoRequest;
 import it.dedagroup.venditabiglietti.principal.facade.AdminFacade;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 @RestController
@@ -35,5 +38,13 @@ public class AdminController {
 		facade.eliminaCliente(id);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
+	
+	@PostMapping(AGGIUNGI_SETTORE)
+	public ResponseEntity<Void> aggiungiSettore(
+		@Valid @RequestBody AggiungiSettoreDtoRequest request) {
+		facade.aggiungiSettore(request);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
 
 }

@@ -13,4 +13,5 @@ public class UtilPath {
 	
 	public static final String ELIMINA_UTENTE_VENDITORE = "/elimina-utente-venditore";
 	public static final String ELIMINA_UTENTE_CLIENTE = "/elimina-utente-cliente";
+	public static final String AGGIUNGI_SETTORE ="/aggiungi-settore";
 }
