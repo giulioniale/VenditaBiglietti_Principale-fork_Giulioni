@@ -4,6 +4,7 @@ import it.dedagroup.venditabiglietti.principal.dto.request.*;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.mapper.BigliettiMapper;
 import it.dedagroup.venditabiglietti.principal.model.*;
+import it.dedagroup.venditabiglietti.principal.service.BigliettoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import static it.dedagroup.venditabiglietti.principal.util.BigliettoUtilPath.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +25,13 @@ public class VenditoreFacade implements GeneralCallService{
     //TODO discutere della creazione di un service layer dove utilizzare le chiamate ai microservizi
     private final BigliettiMapper bigliettiMapper;
     private final UtenteServiceDef utenteServiceDef;
+    private final BigliettoServiceDef bigliettoServiceDef;
     public final String EVENTO_PATH = "http://localhost:8081/evento";
     public final String CATEGORIA_PATH = "http://localhost:8082/categoria";
     public final String SETTORE_PATH = "http://localhost:8083/settore";
     public final String MANIFESTAZIONE_PATH = "http://localhost:8084/manifestazione";
     public final String PREZZO_SETTORE_EVENTO_PATH = "http://localhost:8086/prezzoSettoreEvento";
-    public final String BIGLIETTO_PATH = "http://localhost:8087/biglietto";
+
     public final String LUOGO_PATH = "http://localhost:8088/biglietto";
 
     public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
@@ -85,8 +88,7 @@ public class VenditoreFacade implements GeneralCallService{
             LuogoMicroDTO luogo = callGet(LUOGO_PATH+"/find/id/"+evento.getIdLuogo(),null,null, LuogoMicroDTO.class);
             PrezzoSettoreEventoMicroDTO prezzoSettoreEvento = callGet(PREZZO_SETTORE_EVENTO_PATH+"/find/id/"+request.getIdPrezzoSettoreEvento(),null,null, PrezzoSettoreEventoMicroDTO.class);
             SettoreMicroDTO settore = callGet(SETTORE_PATH+"/find/nome/"+ prezzoSettoreEvento.getIdSettore(),null,null, SettoreMicroDTO.class);
-            int nBigliettiComprati = quantitaBigliettiComprati(request.getIdPrezzoSettoreEvento());
-            double guadagnoPerEventoESettore = guadagnoEventoSettore(prezzoSettoreEvento.getPrezzo(), request.getPrezzoBiglietto(), nBigliettiComprati);
+            int nBigliettiComprati = bigliettoServiceDef.countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNull(request.getIdPrezzoSettoreEvento());
             return bigliettiMapper.createStatisticheRenditaBigliettiDTOResponse(
                     manifestazioneMicroDTO.getNome(),
                     evento.getDescrizione(),
@@ -94,7 +96,8 @@ public class VenditoreFacade implements GeneralCallService{
                     settore.getNome(),
                     nBigliettiComprati,
                     settore.getPosti(),
-                    guadagnoPerEventoESettore);
+                    prezzoSettoreEvento.getPrezzo(), request.getPrezzoBiglietto(), nBigliettiComprati
+            );
         } catch (ResponseStatusException e){
             if (e.getStatusCode().is4xxClientError()){
                 throw e;
@@ -102,33 +105,34 @@ public class VenditoreFacade implements GeneralCallService{
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nel calcolare la rendita dell'evento");
     }
-
+    //TODO sistemare l'implementazione delle statistiche dei biglietti per la manifestazione
     public StatisticheManifestazioneDTOResponse statisticheBigliettiPerManifestazione(ManifestazioneStatisticheDTORequest request){
+        //Mi riprendo la manifestazione tramite id [x]
         ManifestazioneMicroDTO manifestazione = callGet(MANIFESTAZIONE_PATH+"/find/id/"+request.getIdManifestazione(),null,null,ManifestazioneMicroDTO.class);
+        //Mi riprendo ogni evento della manifestazione (tramite l'id della manifestazione associata a essi) [x]
         List<EventoMicroDTO> eventiManifestazione = callGetForList(EVENTO_PATH+"/find/all/manifestazione/id"+manifestazione.getId(),null,null,EventoMicroDTO[].class);
-        List<LuogoMicroDTO> luoghiEvento =  eventiManifestazione.stream().map(evento -> callGet(LUOGO_PATH+"/find/id/"+evento.getIdLuogo(),null,null,LuogoMicroDTO.class)).toList();
-        List<PrezzoSettoreEventoMicroDTO> psePerEventi = eventiManifestazione.stream().map(evento -> callGet(PREZZO_SETTORE_EVENTO_PATH+"/find/evento/id"+evento.getId(),null,null, PrezzoSettoreEventoMicroDTO.class)).toList();
-        List<BigliettoMicroDTO> bigliettiPerPSE = psePerEventi.stream().map(e -> callGet(BIGLIETTO_PATH+"/find/prezzo-settore-id/"+e.getId(),null,null,BigliettoMicroDTO.class)).toList();
-        List<SettoreMicroDTO> settorePerPSE = psePerEventi.stream().map(e -> callGet(SETTORE_PATH+"/find/id/"+e.getIdSettore(),null,null,SettoreMicroDTO.class)).toList();
-        return bigliettiMapper.createStatisticheManifestazioneDTOResponse(
-                manifestazione.getNome(),
-                eventiManifestazione,
-                luoghiEvento,
-                psePerEventi,
-                bigliettiPerPSE,
-                settorePerPSE
-        );
+        //Mi ritrovo i vari luoghi a seconda dell'id del singolo evento [x]
+        //Mi prendo tutti i pse associati all'id dell'evento
+        List<LuogoMicroDTO> luoghiEvento = new ArrayList<>();
+        List<PrezzoSettoreEventoMicroDTO> psePerEventi = new ArrayList<>();
+
+        eventiManifestazione.forEach(evento -> {
+            luoghiEvento.add(callGet(LUOGO_PATH+"/find/id/"+evento.getIdLuogo(),null,null,LuogoMicroDTO.class));
+            psePerEventi.add(callGet(PREZZO_SETTORE_EVENTO_PATH+"/find/evento/id"+evento.getId(),null,null, PrezzoSettoreEventoMicroDTO.class));
+        });
+        //bigliettiPerPSE.add(callGet(BIGLIETTO_PATH+"/find/prezzo-settore-id/"+prezzoSettoreEvento.getId(),null,null,BigliettoMicroDTO.class));
+        //Mi riprendo la lista di settori tramite l'id del singolo evento [x]
+        //List<BigliettoMicroDTO> bigliettiPerPSE = new ArrayList<>();
+        Map <Long, List<BigliettoMicroDTO>> bigliettiPerPSE = new HashMap<>();
+        List<SettoreMicroDTO> settorePerPSE = new ArrayList<>();
+        psePerEventi.forEach(prezzoSettoreEvento -> {
+            bigliettiPerPSE.put(prezzoSettoreEvento.getIdEvento(), bigliettoServiceDef.findAllByIdPrezzoSettoreEventoOrderByPrezzoAsc(prezzoSettoreEvento.getIdEvento()));
+            settorePerPSE.add(callGet(SETTORE_PATH+"/find/id/"+prezzoSettoreEvento.getIdSettore(),null,null,SettoreMicroDTO.class));
+        });
+        return bigliettiMapper.createStatisticheManifestazioneDTOResponse(manifestazione.getNome(), eventiManifestazione, luoghiEvento, psePerEventi, bigliettiPerPSE, settorePerPSE);
     }
     //TODO Decidere se far ritornare il PrezzoSettoreEvento con il prezzo modificato
     public void setPrezzoSettoreEvento(PrezzoSettoreEventoDTORequest request){
         callGet(SETTORE_PATH+"/prezzi-settore-evento/modifica-prezzo",null,request,SettoreMicroDTO.class);
-    }
-
-    public int quantitaBigliettiComprati(long id_prezzoSettoreEvento){
-        return callGet(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
-    }
-
-    public double guadagnoEventoSettore(double prezzoSettoreEvento, double prezzoBiglietto, int nBigliettiComprati){
-        return (prezzoSettoreEvento + prezzoBiglietto) * nBigliettiComprati;
     }
 }

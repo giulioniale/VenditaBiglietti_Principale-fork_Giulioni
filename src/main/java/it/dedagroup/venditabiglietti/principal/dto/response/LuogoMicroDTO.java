@@ -15,6 +15,6 @@ public class LuogoMicroDTO {
     private String cap;
     private String comune;
     private String nazionalita;
-    private boolean IsCancellato;
+    private boolean isCancellato;
     private long version;
 }

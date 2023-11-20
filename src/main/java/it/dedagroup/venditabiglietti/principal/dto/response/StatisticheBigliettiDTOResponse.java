@@ -13,6 +13,7 @@ public class StatisticheBigliettiDTOResponse {
     private String nomeLuogo;
     private String nomeSettore;
     private int bigliettiComprati;
+    private int bigliettiUtimaOra;
     private int bigliettiTotali;
     private double guadagno;
 }
