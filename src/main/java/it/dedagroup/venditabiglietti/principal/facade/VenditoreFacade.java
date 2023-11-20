@@ -46,7 +46,7 @@ public class VenditoreFacade implements GeneralCallService {
     }
     
     public EventoDTOResponse addEvento(AddEventoRequest request) {
-    	Manifestazione m = callGet(pathManifestazione+request.getIdManufestazione(),null,null,Manifestazione.class);
+    	Manifestazione m = callGet(pathManifestazione+request.getIdManifestazione(),null,null,Manifestazione.class);
     	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
     	Luogo l = callGet(pathLuogo+"findById/"+request.getIdLuogo(),null,null,Luogo.class);
     	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
