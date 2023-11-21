@@ -20,11 +20,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class BeanConfigurazione {
 
     @Autowired
+
     UtenteServiceDef uService;
 
+    CallAuthorizationServer uRepo;
+
+
+    //TODO cambiata la repo adesso chiama il microservizio
     @Bean
     public UserDetailsService userDetailsService(){
+
        return u -> uService.findByEmail(u);
+
+       
+
     }
 
     @Bean
