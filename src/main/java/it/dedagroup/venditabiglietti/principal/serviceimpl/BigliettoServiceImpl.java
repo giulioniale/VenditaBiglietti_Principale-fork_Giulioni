@@ -93,4 +93,9 @@ public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallSer
         //return callGet(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
         return 0;
     }
+
+    @Override
+    public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoIn(List<Long> idsPrezzoSettoreEvento) {
+        return null;
+    }
 }

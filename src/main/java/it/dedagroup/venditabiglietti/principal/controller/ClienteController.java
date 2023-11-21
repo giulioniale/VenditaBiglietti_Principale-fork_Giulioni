@@ -2,6 +2,7 @@ package it.dedagroup.venditabiglietti.principal.controller;
 
 import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.ModificaUtenteLoggatoRequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.BigliettoMicroDTO;
 import it.dedagroup.venditabiglietti.principal.facade.ClienteFacade;
 import it.dedagroup.venditabiglietti.principal.model.Biglietto;
 import it.dedagroup.venditabiglietti.principal.model.PrezzoSettoreEvento;
@@ -38,7 +39,7 @@ public class ClienteController {
 
 
     @GetMapping("/{id}/cronologia-acquisti")
-    public ResponseEntity<List<Biglietto>> cronologiaBiglietti(@PathVariable Long id){
+    public ResponseEntity<List<BigliettoMicroDTO>> cronologiaBiglietti(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(clienteFacade.cronologiaBigliettiAcquistati(id));
     }
 
@@ -67,7 +68,7 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body("La modifica dei dati è avvenuta con successo");
     }
     @PostMapping("/crea-biglietto/{idPrezzoSettoreEvento}")
-    public ResponseEntity<Biglietto> acquistaBiglietto(@PathVariable Long idPrezzoSettoreEvento, UsernamePasswordAuthenticationToken token) {
+    public ResponseEntity<BigliettoMicroDTO> acquistaBiglietto(@PathVariable Long idPrezzoSettoreEvento, UsernamePasswordAuthenticationToken token) {
         Utente principal = (Utente)token.getPrincipal();
         long idPrincipal = principal.getId();
       return ResponseEntity.status(HttpStatus.OK).body(clienteFacade.acquistaBiglietto(idPrezzoSettoreEvento, idPrincipal));

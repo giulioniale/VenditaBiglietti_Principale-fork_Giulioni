@@ -6,7 +6,6 @@ import it.dedagroup.venditabiglietti.principal.dto.response.DatiEventiDTORespons
 import it.dedagroup.venditabiglietti.principal.dto.response.StatisticheManifestazioneDTOResponse;
 import it.dedagroup.venditabiglietti.principal.facade.VenditoreFacade;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
-import it.dedagroup.venditabiglietti.principal.security.GestoreToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,8 +26,6 @@ public class VenditoreController {
 
 	@Autowired
 	VenditoreFacade vendFac;
-	@Autowired
-	GestoreToken gestoreToken;
 
 	@PostMapping("/evento/add")
 	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoRequest eventoRequest){
@@ -51,14 +48,7 @@ public class VenditoreController {
 		//TODO Inserire l'upat per riprendere l'email
 		return ResponseEntity.ok(vendFac.visualizzaEventiOrganizzati(idManifestazione));
 	}
-	@GetMapping("/evento/stats/biglietti")
-	public ResponseEntity<DatiEventiDTOResponse> statisticheBigliettiPerEventoSettorePrezzoSettoreEvento(@RequestBody EventoSettorePseDTORequest request, UsernamePasswordAuthenticationToken upat){
-		//TODO L'aggiunta dell'evento si basa su una manifestazione già presente
-		//TODO Inserire l'upat per riprendere l'email
-		Utente u = (Utente)upat.getPrincipal();
-		request.setUsername(u.getUsername());
-		return ResponseEntity.ok(vendFac.statisticheBigliettiPerEventoSettorePrezzoSettoreEvento(request));
-	}
+
 	@GetMapping("/manifestazione/stats/biglietti")
 	public ResponseEntity<StatisticheManifestazioneDTOResponse> statisticheBigliettiPerManifestazione(@RequestBody ManifestazioneStatisticheDTORequest request,UsernamePasswordAuthenticationToken upat){
 		//TODO L'aggiunta dell'evento si basa su una manifestazione già presente
