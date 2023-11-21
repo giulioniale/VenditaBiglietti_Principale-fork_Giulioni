@@ -54,6 +54,9 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 			if(u.getEmail().equalsIgnoreCase(utente.getEmail())){
 				throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già presente in db.");
 			}
+			if(u.getTelefono().equals(utente.getTelefono())){
+				throw new ResponseStatusException(HttpStatus.CONFLICT, "Telefono già presente in db.");
+			}
 		}
 		utenteRepository.save(utente);
 		
