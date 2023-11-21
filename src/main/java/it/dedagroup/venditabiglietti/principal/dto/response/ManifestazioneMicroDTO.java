@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class ManifestazioneMicroDTO {
     private Long id;
     private String nome;
+    private Long categoria_id;
+    private long utente_id;
     private boolean isCancellato;
     private long version;
 }

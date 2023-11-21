@@ -21,6 +21,9 @@ import it.dedagroup.venditabiglietti.principal.dto.response.EventoDTOResponse;
 import it.dedagroup.venditabiglietti.principal.facade.GeneralFacade;
 import jakarta.validation.Valid;
 
+import java.util.List;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.*;
+
 @RestController
 @RequestMapping("/all")
 public class GeneralController {

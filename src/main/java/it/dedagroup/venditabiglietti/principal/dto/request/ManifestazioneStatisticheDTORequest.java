@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ManifestazioneStatisticheDTORequest {
+    private String username;
     private long idManifestazione;
     private List<String> luoghi;
     private List<Settore> settoriIds;
