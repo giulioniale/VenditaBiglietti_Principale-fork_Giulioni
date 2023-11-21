@@ -37,6 +37,7 @@ public class Settore {
 	@OneToMany(mappedBy = "settore")
 	List<PrezzoSettoreEvento> prezziSettoreEvento;
 	@Version
+	
 	private long version;
 
 }

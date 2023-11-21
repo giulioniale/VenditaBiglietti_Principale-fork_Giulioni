@@ -39,6 +39,7 @@ public class Manifestazione {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Utente utente;
 	@Version
+	
 	private long version;
 
 }

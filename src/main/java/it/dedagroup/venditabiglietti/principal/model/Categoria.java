@@ -33,6 +33,7 @@ public class Categoria {
 	@OneToMany(mappedBy = "categoria")
 	private List<Manifestazione> manifestazioni;
 	@Version
+	
 	private long version;
 
 }

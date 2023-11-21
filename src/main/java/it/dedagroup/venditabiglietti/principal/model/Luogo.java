@@ -48,6 +48,7 @@ public class Luogo {
 	@OneToMany(mappedBy = "luogo")
 	private List<Settore> settori;
 	@Version
+	
 	private long version;
 
 }
