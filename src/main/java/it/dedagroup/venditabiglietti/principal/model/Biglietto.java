@@ -41,5 +41,6 @@ public class Biglietto {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private PrezzoSettoreEvento prezzoSettoreEvento;
 	@Version
+	
 	private long version;
 }

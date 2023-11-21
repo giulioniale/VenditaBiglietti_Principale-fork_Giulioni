@@ -10,6 +10,8 @@ import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiSettoreDtoReq
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.service.CategoriaServiceDef;
+import it.dedagroup.venditabiglietti.principal.service.EventoServiceDef;
+import it.dedagroup.venditabiglietti.principal.service.ManifestazioneServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.SettoreServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 
@@ -20,13 +22,19 @@ public class AdminFacade {
 	UtenteServiceDef utenteService;
 	
 	@Autowired
-
 	UtenteMapper utenteMapper;
 	
 	@Autowired
 	CategoriaServiceDef categoriaService;
 
+	@Autowired
 	SettoreServiceDef settoreService;
+	
+	@Autowired 
+	ManifestazioneServiceDef manifestazioneService;
+	
+	@Autowired
+	EventoServiceDef eventoService;
 	
 	
 	
@@ -54,6 +62,16 @@ public class AdminFacade {
 
 	public void aggiungiSettore(AggiungiSettoreDtoRequest dto) {
 		 settoreService.aggiungiSettore(dto);
+		
+	}
+
+	public void eliminaManifestazione(long id) {
+		manifestazioneService.eliminaManifestazione(id);
+		
+	}
+
+	public void eliminaEvento(long id) {
+		eventoService.eliminaEvento(id);
 		
 	}
 

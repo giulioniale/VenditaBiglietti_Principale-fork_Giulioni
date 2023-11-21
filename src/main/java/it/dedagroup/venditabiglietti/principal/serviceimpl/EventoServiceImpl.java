@@ -1,16 +1,25 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.service.EventoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
-import jdk.jfr.Event;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class EventoServiceImpl implements GeneralCallService, EventoServiceDef {
+public class EventoServiceImpl implements EventoServiceDef, GeneralCallService{
+	
+
+	@Override
+	public void eliminaEvento(long id) {
+		callPost(servicePath+"delete/"+id, null, id, String.class);
+		
+	}
+
+
 
     private String servicePath="http://localhost:8081/evento/";
 
@@ -20,4 +29,5 @@ public class EventoServiceImpl implements GeneralCallService, EventoServiceDef {
         Evento[] listaEventiFuturi =callGet(mioPath,null,null, Evento[].class);
         return List.of(listaEventiFuturi);
     }
+
 }

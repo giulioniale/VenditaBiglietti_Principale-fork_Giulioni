@@ -13,10 +13,12 @@ import org.springframework.web.server.ResponseStatusException;
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.repository.UtenteRepository;
+import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import jakarta.transaction.Transactional;
 
 @Service
+
 public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 
 	private final String pathUtente="http://localhost:8092/utente";
@@ -75,7 +77,7 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 
 	@Override
 	public Utente findByEmail(String email) {
-		return utenteRepository.findByEmail(email).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con questa email."));
+		return callPost("http://localhost:8085/email/"+email, null, email, Utente.class);
 	}
 	@Override
 	public Utente login(String email,String password) {
