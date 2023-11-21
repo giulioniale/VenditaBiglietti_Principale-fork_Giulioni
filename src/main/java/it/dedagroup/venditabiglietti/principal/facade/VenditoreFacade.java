@@ -49,11 +49,11 @@ public class VenditoreFacade implements GeneralCallService{
     }
 
     public EventoDTOResponse addEvento(AddEventoRequest request) {
-    	Manifestazione m = callGet(pathManifestazione+request.getIdManifestazione(),null,null,Manifestazione.class);
+    	Manifestazione m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(),null,null,Manifestazione.class);
     	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
-    	Luogo l = callGet(pathLuogo+"findById/"+request.getIdLuogo(),null,null,Luogo.class);
+    	Luogo l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(),null,null,Luogo.class);
     	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
-    	return callPost(pathEvento+"salva",null,request,EventoDTOResponse.class);
+    	return callPost(EVENTO_PATH+"salva",null,request,EventoDTOResponse.class);
     }
 
     public EventoDTOResponse deleteEvento(long idEvento) {
