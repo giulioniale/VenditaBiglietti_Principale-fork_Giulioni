@@ -33,9 +33,8 @@ public class GeneralController {
     }
 
     @PostMapping(LOGIN)
-    public ResponseEntity<String> login(@Valid @RequestBody LoginDTORequest request){
-        Utente u=gFac.login(request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).header("Authorization",gestoreToken.generaToken(u)).body("Benvenuto!");
+    public ResponseEntity<Utente> login(@Valid @RequestBody LoginDTORequest request){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(gFac.login(request));
     }
 
     @GetMapping(EVENTI_FUTURI_CON_BIGLIETTI)
