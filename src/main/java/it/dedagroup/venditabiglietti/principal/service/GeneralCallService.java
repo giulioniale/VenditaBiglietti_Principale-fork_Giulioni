@@ -95,7 +95,13 @@ public interface GeneralCallService {
 		return call(HttpMethod.PUT, path, auth, e, classe);
 	}
 
-	default <DTORequest, DTOResponse> List<DTOResponse> callGetForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe){
+	default <DTORequest, DTOResponse> List<DTOResponse> callGetForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe) {
 		return List.of(callGet(path, auth, e, classe));
+	}
+	default <DTORequest, DTOResponse> List<DTOResponse> callPostForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe) {
+		return List.of(callPost(path, auth, e, classe));
+	}
+	default <DTORequest, DTOResponse> List<DTOResponse> callPutForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe) {
+		return List.of(callPut(path, auth, e, classe));
 	}
 }
