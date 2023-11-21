@@ -21,6 +21,10 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Autowired
 	private UtenteRepository utenteRepository;
 
+	//TODO pulire i metodi togliendo le duplicazioni
+
+
+
 	@Override
 	public Utente findByEmailAndPassword(String email, String password) {
 		return utenteRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
@@ -91,7 +95,7 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	public String disattivaAdmin(long id) {
 		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
 		if (!u.getRuolo().equals(Ruolo.ADMIN)) {
-			throw new RuntimeException("l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
+			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
 		} else {
 			u.setRuolo(Ruolo.CLIENTE);
 			modificaUtente(u);

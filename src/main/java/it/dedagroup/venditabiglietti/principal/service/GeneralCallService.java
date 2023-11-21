@@ -53,9 +53,8 @@ public interface GeneralCallService {
 		}
 	}
 	
-	private<DTORequest> HttpEntity<DTORequest> createEntity(String auth,DTORequest e){
+	private<DTORequest> HttpEntity<DTORequest> createEntity(DTORequest e){
 		HttpHeaders headers=new HttpHeaders();
-		if(auth!=null)headers.add("Authorization", "Bearer "+auth);
 		if(e==null) {
 			return new HttpEntity<>(headers);
 		}else {
@@ -64,8 +63,8 @@ public interface GeneralCallService {
 		}
 	}
 	
-	private <DTORequest,DTOResponse> DTOResponse call(HttpMethod method,String path,String auth,DTORequest e,Class<DTOResponse> classe) {
-		HttpEntity<DTORequest> requestBody=createEntity(auth, e);
+	private <DTORequest,DTOResponse> DTOResponse call(HttpMethod method,String path,DTORequest e,Class<DTOResponse> classe) {
+		HttpEntity<DTORequest> requestBody=createEntity(e);
 		RestTemplate template=new RestTemplate();
 		try {
 			ResponseEntity<DTOResponse> response=template.exchange(path,method,requestBody,classe);
@@ -83,19 +82,19 @@ public interface GeneralCallService {
 		}
 	}
 		
-	default <DTORequest,DTOResponse> DTOResponse callGet(String path,String auth,DTORequest e,Class<DTOResponse> classe) {
-		return call(HttpMethod.GET, path, auth, e, classe);
+	default <DTORequest,DTOResponse> DTOResponse callGet(String path,DTORequest e,Class<DTOResponse> classe) {
+		return call(HttpMethod.GET, path, e, classe);
 	}
 	
-	default <DTORequest,DTOResponse> DTOResponse callPost(String path,String auth,DTORequest e,Class<DTOResponse> classe) {
-		return call(HttpMethod.POST, path, auth, e, classe);
+	default <DTORequest,DTOResponse> DTOResponse callPost(String path,DTORequest e,Class<DTOResponse> classe) {
+		return call(HttpMethod.POST, path, e, classe);
 	}
 	
-	default <DTORequest,DTOResponse> DTOResponse callPut(String path,String auth,DTORequest e,Class<DTOResponse> classe) {
-		return call(HttpMethod.PUT, path, auth, e, classe);
+	default <DTORequest,DTOResponse> DTOResponse callPut(String path,DTORequest e,Class<DTOResponse> classe) {
+		return call(HttpMethod.PUT, path, e, classe);
 	}
 
-	default <DTORequest, DTOResponse> List<DTOResponse> callGetForList(String path, String auth, DTORequest e, Class<DTOResponse[]> classe){
-		return List.of(callGet(path, auth, e, classe));
+	default <DTORequest, DTOResponse> List<DTOResponse> callGetForList(String path, DTORequest e, Class<DTOResponse[]> classe){
+		return List.of(callGet(path, e, classe));
 	}
 }

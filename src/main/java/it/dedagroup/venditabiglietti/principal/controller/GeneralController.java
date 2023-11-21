@@ -25,7 +25,7 @@ public class GeneralController {
         gFac.registrazioneCliente(req);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
-
+    //TODO da modificare
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginDTORequest request){
         Utente u=gFac.login(request);
