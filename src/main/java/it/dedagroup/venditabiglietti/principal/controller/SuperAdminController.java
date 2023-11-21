@@ -29,7 +29,7 @@ public class SuperAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 	
-	@GetMapping(DISATTIVA_ADMIN) 
+	@GetMapping(DISATTIVA_ADMIN+"/{id}")
 	public ResponseEntity<String> disattivaAdmin(@PathVariable long id) {
 		//se l'utente ha il ruolo 'ADMIN', il metodo .disattivaAdmin fa un downgrade al ruolo CLIENTE
 		String email = suFacade.disattivaAdmin(id);

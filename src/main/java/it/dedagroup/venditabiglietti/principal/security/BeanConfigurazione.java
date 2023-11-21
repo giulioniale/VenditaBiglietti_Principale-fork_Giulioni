@@ -18,12 +18,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class BeanConfigurazione {
 
     @Autowired
-    UtenteRepository uRepo;
+    CallAuthorizationServer uRepo;
 
+    //TODO cambiata la repo adesso chiama il microservizio
     @Bean
     public UserDetailsService userDetailsService(){
-        return u -> uRepo.findByEmail(u)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente trovato."));
+        return u -> uRepo.findByEmail(u);
     }
 
     @Bean
