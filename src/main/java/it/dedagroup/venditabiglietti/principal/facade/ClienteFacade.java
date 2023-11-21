@@ -1,6 +1,8 @@
 package it.dedagroup.venditabiglietti.principal.facade;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.AddBigliettoDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.ModificaUtenteLoggatoRequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.BigliettoMicroDTO;
 import it.dedagroup.venditabiglietti.principal.model.Biglietto;
 import it.dedagroup.venditabiglietti.principal.model.PrezzoSettoreEvento;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
@@ -31,9 +33,9 @@ public class ClienteFacade {
         service.eliminaUtente(id);
     }
 
-    public List<Biglietto> cronologiaBigliettiAcquistati(Long id){
+    public List<BigliettoMicroDTO> cronologiaBigliettiAcquistati(Long id){
         service.findById(id);
-        return bigliettoService.findBigliettiByIdUtente(id);
+        return bigliettoService.findAllByIdUtente(id);
     }
     public void modificaUtente(ModificaUtenteLoggatoRequest request) {
     	Utente utenteDaMod=service.findByEmailAndPassword(request.getEmailAttuale(), request.getPasswordAttuale());
@@ -52,15 +54,17 @@ public class ClienteFacade {
     	service.modificaUtente(utenteDaMod);
     }
 
-    public Biglietto acquistaBiglietto(Long idPrezzoSettoreEvento, long idUtente) {
+    public BigliettoMicroDTO acquistaBiglietto(Long idPrezzoSettoreEvento, long idUtente) {
         if (idPrezzoSettoreEvento > 0 ){
             PrezzoSettoreEvento newPrezzoSettoreEvento = settoreEventoService.findById(idPrezzoSettoreEvento);
             Biglietto newBiglietto = new Biglietto();
             newBiglietto.setDataAcquisto(LocalDate.now());
             newBiglietto.setPrezzo(newPrezzoSettoreEvento.getPrezzo());
             newBiglietto.setUtente(service.findById(idUtente));
-            return bigliettoService.save(newBiglietto);
-            ;
+            AddBigliettoDTORequest request=new AddBigliettoDTORequest();
+            request.setIdUtente(idUtente);
+            request.setIdPrezzoSettore(idPrezzoSettoreEvento);
+            return bigliettoService.saveBiglietto(request);
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id deve essere maggiore di zero.");
     }
