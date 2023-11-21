@@ -32,8 +32,9 @@ public class Categoria {
 	private boolean isCancellato = true;
 	@OneToMany(mappedBy = "categoria")
 	private List<Manifestazione> manifestazioni;
-	@Version
 	
+
+    @Version
 	private long version;
 
 }

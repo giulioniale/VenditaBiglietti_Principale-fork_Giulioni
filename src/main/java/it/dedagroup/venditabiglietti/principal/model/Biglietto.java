@@ -43,5 +43,4 @@ public class Biglietto {
 	@Version
 	
 	private long version;
-
 }

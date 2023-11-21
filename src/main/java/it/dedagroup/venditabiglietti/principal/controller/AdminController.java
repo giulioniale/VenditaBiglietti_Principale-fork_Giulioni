@@ -1,18 +1,25 @@
 package it.dedagroup.venditabiglietti.principal.controller;
-
-import static it.dedagroup.venditabiglietti.principal.util.UtilPath.*;
-
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ADMIN_PATH;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.AGGIUNGI_CATEGORIA;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.AGGIUNGI_SETTORE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.AGGIUNGI_UTENTE_VENDITORE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_UTENTE_CLIENTE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_UTENTE_VENDITORE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_MANIFESTAZIONE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_EVENTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiCategoriaDtoRequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiSettoreDtoRequest;
+import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiUtenteDTORequest;
 import it.dedagroup.venditabiglietti.principal.facade.AdminFacade;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -39,10 +46,39 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 	
+	@PostMapping(AGGIUNGI_UTENTE_VENDITORE)
+	public ResponseEntity<Void> aggiungiVenditore(
+			@Valid @RequestBody AggiungiUtenteDTORequest request){
+		facade.aggiungiVenditore(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+	
+	@PostMapping(AGGIUNGI_CATEGORIA)
+	public ResponseEntity<Void> aggiungiCategoria(
+			@Valid @RequestBody AggiungiCategoriaDtoRequest request){
+		facade.aggiungiCategoria(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build(); 
+		
+	}
+
 	@PostMapping(AGGIUNGI_SETTORE)
 	public ResponseEntity<Void> aggiungiSettore(
 		@Valid @RequestBody AggiungiSettoreDtoRequest request) {
 		facade.aggiungiSettore(request);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
+	@PostMapping(ELIMINA_MANIFESTAZIONE+"/{id}")
+	public ResponseEntity<Void> eliminaManifestazione(
+		@PathVariable long id) {
+		facade.eliminaManifestazione(id);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
+	@PostMapping(ELIMINA_EVENTO+"/{id}")
+	public ResponseEntity<Void> eliminaEvento(
+			@PathVariable long id) {
+		facade.eliminaEvento(id);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 	

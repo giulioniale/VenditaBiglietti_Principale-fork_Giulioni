@@ -41,5 +41,4 @@ public class Manifestazione {
 	@Version
 	
 	private long version;
-
 }

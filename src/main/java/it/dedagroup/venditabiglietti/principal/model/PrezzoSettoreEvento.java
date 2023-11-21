@@ -37,5 +37,4 @@ public class PrezzoSettoreEvento {
 	@Version
 	
 	private long version;
-
 }
