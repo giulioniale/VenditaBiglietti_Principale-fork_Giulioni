@@ -24,4 +24,9 @@ public class SuperAdminFacade {
 		utenteService.aggiungiUtente(uNew);
 	}
 
+
+	public String disattivaAdmin(Long id) {
+		return utenteService.disattivaAdmin(id);
+	}
+
 }
