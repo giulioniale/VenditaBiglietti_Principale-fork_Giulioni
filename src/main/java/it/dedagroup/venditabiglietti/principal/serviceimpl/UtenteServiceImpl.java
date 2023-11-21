@@ -1,8 +1,9 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
+import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,16 @@ import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UtenteServiceImpl implements UtenteServiceDef{
+public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
+
+	private final String pathUtente="http://localhost:8092/utente";
 
 	@Autowired
 	private UtenteRepository utenteRepository;
+
+	//TODO pulire i metodi togliendo le duplicazioni
+
+
 
 	@Override
 	public Utente findByEmailAndPassword(String email, String password) {
@@ -49,17 +56,7 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public void aggiungiUtente(Utente utente) {
-		List<Utente> utenti = utenteRepository.findAll().stream().filter(u-> !u.isCancellato()).toList();
-		for(Utente u : utenti){
-			if(u.getEmail().equalsIgnoreCase(utente.getEmail())){
-				throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già presente in db.");
-			}
-			if(u.getTelefono().equals(utente.getTelefono())){
-				throw new ResponseStatusException(HttpStatus.CONFLICT, "Telefono già presente in db.");
-			}
-		}
-		utenteRepository.save(utente);
-		
+		callPost(pathUtente + "/aggiungiUtente", null, utente, Void.class);
 	}
 
 	@Override
@@ -81,8 +78,9 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 		return utenteRepository.findByEmail(email).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente con questa email."));
 	}
 	@Override
-	public Utente login(String email,String password){
-		return utenteRepository.findByEmailAndPassword(email,password).orElseThrow(()->new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nessun utente trovato con queste credenziali"));
+	public Utente login(String email,String password) {
+		//Utente u = callPost(pathUtente + "/login", null, LoginDTORequest.class, Utente.class);
+		return null;
 	}
 
 	@Override
@@ -94,12 +92,19 @@ public class UtenteServiceImpl implements UtenteServiceDef{
 	public String disattivaAdmin(long id) {
 		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
 		if (!u.getRuolo().equals(Ruolo.ADMIN)) {
-			throw new RuntimeException("l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
+			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
 		} else {
 			u.setRuolo(Ruolo.CLIENTE);
 			modificaUtente(u);
 		}
 		return u.getEmail();
 	}
+
+	@Override
+	//torna il token
+	public String login(LoginDTORequest request){
+		return callPost(pathUtente + "/login", null, request, String.class);
+	}
+
 
 }

@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiUtenteDTORequest;
 import it.dedagroup.venditabiglietti.principal.facade.SuperAdminFacade;
-import it.dedagroup.venditabiglietti.principal.security.GestoreToken;
 import jakarta.validation.Valid;
 
 @RestController
@@ -31,7 +29,7 @@ public class SuperAdminController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 	
-	@GetMapping(DISATTIVA_ADMIN) 
+	@GetMapping(DISATTIVA_ADMIN+"/{id}")
 	public ResponseEntity<String> disattivaAdmin(@PathVariable long id) {
 		//se l'utente ha il ruolo 'ADMIN', il metodo .disattivaAdmin fa un downgrade al ruolo CLIENTE
 		String email = suFacade.disattivaAdmin(id);
