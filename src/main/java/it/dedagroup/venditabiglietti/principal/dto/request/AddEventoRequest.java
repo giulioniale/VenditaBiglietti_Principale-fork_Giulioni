@@ -16,7 +16,7 @@ public class AddEventoRequest {
 	private LocalDate data;
 	private LocalTime ora;
 	private String descrizione;
-	private long idManufestazione;
+	private long idManifestazione;
 	private long idLuogo;
 //	private List<Long> idPrezzoSettoreEvento;
 	

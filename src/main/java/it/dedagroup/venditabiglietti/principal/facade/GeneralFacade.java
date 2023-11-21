@@ -2,21 +2,30 @@ package it.dedagroup.venditabiglietti.principal.facade;
 
 import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiUtenteDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.EventoDTOResponse;
+import it.dedagroup.venditabiglietti.principal.mapper.EventoMapper;
 import it.dedagroup.venditabiglietti.principal.mapper.UtenteMapper;
+import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 
 import java.util.List;
 
 @Service
-public class GeneralFacade {
+public class GeneralFacade implements GeneralCallService{
 
     @Autowired
     UtenteServiceDef uServ;
+
+    @Autowired
+    EventoMapper evMap;
+
+    private final String pathEvento="http://localhost:8081/evento/";
 
     @Autowired
     UtenteMapper uMap;
@@ -28,9 +37,15 @@ public class GeneralFacade {
     }
 
     public Utente login(LoginDTORequest request){
-        if(request.isRequestNull()){
+        Utente u = uServ.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        if(u.isCancellato()){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Nessun utente trovato con queste credenziali");
         } else return uServ.login(request.getEmail(),request.getPassword());
+    }
+
+    public List<EventoDTOResponse> trovaEventiFuturiConBiglietti(){
+        List<Evento> eventiFuturi = callGetForList(pathEvento + "/trovaEventiFuturi", null, null, Evento[].class);
+        return evMap.toEventoDTOResponseList(eventiFuturi);
     }
 
 }
