@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,8 @@ public class Settore {
 	@Version
 	private long version;
 
+    public void addPrezzoSettoreEvento(PrezzoSettoreEvento pse) {
+		if(prezziSettoreEvento==null)prezziSettoreEvento= new ArrayList<>();
+		prezziSettoreEvento.add(pse);
+    }
 }

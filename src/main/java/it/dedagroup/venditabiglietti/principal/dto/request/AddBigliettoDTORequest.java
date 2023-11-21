@@ -9,8 +9,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddBigliettoDTORequest {
-    private LocalDate dataAcquisto;
-    private double prezzo;
     private long idUtente;
-    private long idPrezzoSettoreEvento;
+    private long idPrezzoSettore;
 }

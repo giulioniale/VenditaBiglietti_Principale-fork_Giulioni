@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatisticheManifestazioneDTOResponse {
-    private String nomeManifestazione;
-    private List<DatiEventiDTOResponse> profittoEventiDellaManifestazione;
+public class SettoriPerSingoloLuogo {
+    private String settore;
+    private long bigliettiComprati;
+    private long bigliettiTotali;
+    private double guadagnoBiglietti;
+    private double prezzoAttuale;
 }

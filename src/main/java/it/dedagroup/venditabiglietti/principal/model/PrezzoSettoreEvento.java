@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -36,4 +37,9 @@ public class PrezzoSettoreEvento {
 	private List<Biglietto> biglietti;
 	@Version
 	private long version;
+
+	public void addBiglietto(Biglietto b) {
+		if(biglietti==null)biglietti=new ArrayList<>();
+		biglietti.add(b);
+	}
 }
