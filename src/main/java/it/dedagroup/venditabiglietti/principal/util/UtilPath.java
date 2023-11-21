@@ -13,5 +13,14 @@ public class UtilPath {
 	
 	public static final String ELIMINA_UTENTE_VENDITORE = "/elimina-utente-venditore";
 	public static final String ELIMINA_UTENTE_CLIENTE = "/elimina-utente-cliente";
+	public static final String AGGIUNGI_UTENTE_VENDITORE = "/aggiungi-utente-venditore";
+	public static final String AGGIUNGI_CATEGORIA = "/aggiungi-categoria";
 	public static final String AGGIUNGI_SETTORE ="/aggiungi-settore";
+
+	//-------------------------------------------GENERAL------------------------------------------------------/
+	public static final String GENERAL_PATH = "/all";
+	public static final String REGISTRAZIONE = "/registrazioneCliente";
+	public static final String LOGIN = "/login";
+	public static final String EVENTI_FUTURI_CON_BIGLIETTI = "/trovaEventiFuturiConBiglietti";
+	public static final String FILTRA_EVENTI = "/filtraEventi";
 }
