@@ -22,12 +22,11 @@ public class FilterChainManager {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf(t -> t.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/all/**").permitAll()
                         .requestMatchers("/cliente/**").hasAnyRole(Ruolo.CLIENTE.toString(), Ruolo.VENDITORE.toString(), Ruolo.ADMIN.toString(), Ruolo.SUPER_ADMIN.toString())
                         .requestMatchers("/venditore/**").hasAnyRole(Ruolo.VENDITORE.toString(), Ruolo.ADMIN.toString(), Ruolo.SUPER_ADMIN.toString())
                         .requestMatchers("/admin/**").hasAnyRole(Ruolo.ADMIN.toString(), Ruolo.SUPER_ADMIN.toString())
                         .requestMatchers("/superAdmin/**").hasRole(Ruolo.SUPER_ADMIN.toString())
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(provider)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
