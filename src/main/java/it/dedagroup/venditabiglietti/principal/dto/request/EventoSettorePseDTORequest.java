@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventoSettorePseDTORequest {
+    private String username;
     private String descrizioneEvento;
     private long idPrezzoSettoreEvento;
     private double prezzoBiglietto;

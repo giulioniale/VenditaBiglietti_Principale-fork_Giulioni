@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -50,4 +51,8 @@ public class Luogo {
 	@Version
 	private long version;
 
+    public void addEventi(Evento e) {
+		if(eventi==null)eventi=new ArrayList<>();
+		eventi.add(e);
+    }
 }

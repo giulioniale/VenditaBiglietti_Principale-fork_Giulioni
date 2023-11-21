@@ -88,4 +88,9 @@ public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallSer
     public List<Double> findDistinctPrezzoBigliettoByIdPrezzoSettoreEvento(long id_prezzoSettoreEvento) {
         return callGetForList("",null,null,Double[].class);
     }
+    @Override
+    public int countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNullAndPrezzo(long id_prezzoSettoreEvento, double prezzo) {
+        //return callGet(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
+        return 0;
+    }
 }
