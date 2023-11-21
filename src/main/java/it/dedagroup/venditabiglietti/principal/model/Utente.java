@@ -61,7 +61,7 @@ public class Utente implements UserDetails {
 	@OneToMany(mappedBy = "utente")
 	private List<Manifestazione> manifestazioni;
 	@Version
-	@Column(nullable = false, columnDefinition = "BIGINT DEFAULT 1")
+	
 	private long version;
 
 	@Override

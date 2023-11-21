@@ -36,6 +36,7 @@ public class PrezzoSettoreEvento {
 	@OneToMany(mappedBy = "prezzoSettoreEvento")
 	private List<Biglietto> biglietti;
 	@Version
+	
 	private long version;
 
 	public void addBiglietto(Biglietto b) {

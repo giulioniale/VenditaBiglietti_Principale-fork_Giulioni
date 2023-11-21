@@ -1,11 +1,13 @@
 package it.dedagroup.venditabiglietti.principal.service;
 
+import java.util.List;
+
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 
-import java.util.List;
 
 public interface EventoServiceDef {
 
-    public List<Evento> trovaEventiFuturi();
+	void eliminaEvento(long id);
 
+    public List<Evento> trovaEventiFuturi();
 }
