@@ -8,6 +8,6 @@ public class PrezzoSettoreEventoServiceImpl implements PrezzoSettoreEventoServic
     @Override
     public PrezzoSettoreEvento findById(Long idPrezzoSettoreEvento) {
         String path = "http://localhost:8086/prezzi-settore-evento/"+ idPrezzoSettoreEvento;
-        return callGet(path, idPrezzoSettoreEvento, PrezzoSettoreEvento.class);
+        return callGet(path,null, idPrezzoSettoreEvento, PrezzoSettoreEvento.class);
     }
 }
