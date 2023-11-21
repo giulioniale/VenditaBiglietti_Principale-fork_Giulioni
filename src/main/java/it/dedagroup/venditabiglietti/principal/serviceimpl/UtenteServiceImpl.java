@@ -1,8 +1,8 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -75,8 +75,8 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 	}
 	@Override
 	public Utente login(String email,String password) {
-		Utente u = callPost(pathUtente + "/login", null, null, Utente.class);
-		return u;
+		//Utente u = callPost(pathUtente + "/login", null, LoginDTORequest.class, Utente.class);
+		return null;
 	}
 
 	@Override
@@ -95,5 +95,12 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 		}
 		return u.getEmail();
 	}
+
+	@Override
+	//torna il token
+	public String login(LoginDTORequest request){
+		return callPost(pathUtente + "/login", null, request, String.class);
+	}
+
 
 }

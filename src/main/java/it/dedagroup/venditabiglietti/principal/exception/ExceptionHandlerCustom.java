@@ -51,7 +51,7 @@ public class ExceptionHandlerCustom {
         return error;
     }
 
-    @ExceptionHandler(ResponseStatusException.class)
+    /*@ExceptionHandler(ResponseStatusException.class)
     @ResponseBody
     ResponseStatusExceptionCustomMessageDTOResponse onResponseStatusException(ResponseStatusException e)
     { ResponseStatusExceptionCustomMessageDTOResponse error = new ResponseStatusExceptionCustomMessageDTOResponse();
@@ -59,6 +59,6 @@ public class ExceptionHandlerCustom {
         error.setReason(e.getReason());
         error.setStatusCodeNumber(e.getStatusCode().value());
         return error;
-    }
+    }*/
 
 }

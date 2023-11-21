@@ -7,9 +7,11 @@ import it.dedagroup.venditabiglietti.principal.mapper.EventoMapper;
 import it.dedagroup.venditabiglietti.principal.mapper.UtenteMapper;
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
+import it.dedagroup.venditabiglietti.principal.service.EventoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
@@ -21,6 +23,9 @@ public class GeneralFacade implements GeneralCallService{
 
     @Autowired
     UtenteServiceDef uServ;
+    @Autowired
+    EventoServiceDef eServ;
+
 
     @Autowired
     EventoMapper evMap;
@@ -34,15 +39,14 @@ public class GeneralFacade implements GeneralCallService{
         Utente uNew =uMap.toUtenteCliente(req);
         uServ.aggiungiUtente(uNew);
     }
-
-    public Utente login(LoginDTORequest request){
-        Utente u = uServ.login(request.getEmail(), request.getPassword());
-        return u;
-    }
-
     public List<EventoDTOResponse> trovaEventiFuturiConBiglietti(){
         List<Evento> eventiFuturi = callGetForList(pathEvento + "/trovaEventiFuturi", null, null, Evento[].class);
         return evMap.toEventoDTOResponseList(eventiFuturi);
+    }
+
+
+    public String login(LoginDTORequest request){
+        return uServ.login(request);
     }
 
 }
