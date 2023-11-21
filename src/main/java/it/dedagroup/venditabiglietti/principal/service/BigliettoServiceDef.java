@@ -25,4 +25,7 @@ public interface BigliettoServiceDef {
 
     public int countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNull(long id_prezzoSettoreEvento);
     public List<Double> findDistinctPrezzoBigliettoByIdPrezzoSettoreEvento(long id_prezzoSettoreEvento);
+    public int countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNullAndPrezzo(long id_prezzoSettoreEvento, double prezzo);
+
+    public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoIn(List<Long> idsPrezzoSettoreEvento);
 }
