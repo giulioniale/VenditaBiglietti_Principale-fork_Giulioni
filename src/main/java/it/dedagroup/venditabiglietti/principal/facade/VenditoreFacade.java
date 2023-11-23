@@ -89,36 +89,7 @@ public class VenditoreFacade implements GeneralCallService{
         vemDTO.setEventiManifestazione(map);
         return vemDTO;
     }
-    //TODO Possibile rimozione del metodo statisticheBigliettiPerEventoSettorePrezzoSettoreEvento
-    /*
-    public StatisticheBigliettiDTOResponse statisticheBigliettiPerEventoSettorePrezzoSettoreEvento(EventoSettorePseDTORequest request){
-        try {
-            EventoMicroDTO evento = callGet(EVENTO_PATH+"/find/descrizione/"+request.getDescrizioneEvento(),null,null, EventoMicroDTO.class);
-            ManifestazioneMicroDTO manifestazioneMicroDTO = callGet(MANIFESTAZIONE_PATH+"/find/id/"+evento.getIdManifestazione(),null,null,ManifestazioneMicroDTO.class);
-            LuogoMicroDTO luogo = callGet(LUOGO_PATH+"/find/id/"+evento.getIdLuogo(),null,null, LuogoMicroDTO.class);
-            PrezzoSettoreEventoMicroDTO prezzoSettoreEvento = callGet(PREZZO_SETTORE_EVENTO_PATH+"/find/id/"+request.getIdPrezzoSettoreEvento(),null,null, PrezzoSettoreEventoMicroDTO.class);
-            SettoreMicroDTO settore = callGet(SETTORE_PATH+"/find/nome/"+ prezzoSettoreEvento.getIdSettore(),null,null, SettoreMicroDTO.class);
-            int nBigliettiComprati = bigliettoServiceDef.countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNull(request.getIdPrezzoSettoreEvento());
-            return bigliettiMapper.createStatisticheRenditaBigliettiDTOResponse(
-                    manifestazioneMicroDTO.getNome(),
-                    evento.getDescrizione(),
-                    luogo.getRiga1(),
-                    settore.getNome(),
-                    nBigliettiComprati,
-                    settore.getPosti(),
-                    prezzoSettoreEvento.getPrezzo(), request.getPrezzoBiglietto(), nBigliettiComprati
-            );
-        } catch (ResponseStatusException e){
-            if (e.getStatusCode().is4xxClientError()){
-                throw e;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nel calcolare la rendita dell'evento");
-    }
-     */
     //TODO sistemare l'implementazione delle statistiche dei biglietti per la manifestazione
-    //TODO Aggiungere il controllo del ruolo dell'utente
-
     public StatisticheManifestazioneDTOResponse statisticheBigliettiPerManifestazione(ManifestazioneStatisticheDTORequest request,Utente u){
         if (!u.getRuolo().equals(Ruolo.VENDITORE))throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Errore l'utente non ha i permessi");
         ManifestazioneMicroDTO microDTO = callGet(MANIFESTAZIONE_PATH+"/find/id/"+request.getIdManifestazione(),null,null,ManifestazioneMicroDTO.class);
@@ -128,13 +99,13 @@ public class VenditoreFacade implements GeneralCallService{
         List<EventoMicroDTO> eventiManifestazione = callGetForList(EVENTO_PATH+"/find/all/microDTO/id"+microDTO.getId(),null,null,EventoMicroDTO[].class);
         List<Long> idLuoghi=eventiManifestazione.stream().map(EventoMicroDTO::getIdLuogo).toList();
         //TODO popola
-        List<LuogoMicroDTO> luoghiMicroDTO=callPostForList("","£","",null);
+        List<LuogoMicroDTO> luoghiMicroDTO=callPostForList("","£",idLuoghi,null);
         List<SettoreMicroDTO> settoreMicroDTO = callPostForList("",null,"",null);
         List<PrezzoSettoreEventoMicroDTO> psePerEventi = callPostForList("","","",null);
         List<Luogo> luoghi=luogoMapper.toLuogoList(luoghiMicroDTO,settoreMicroDTO);
         List<Evento> eventi=eventoMapper.toEventoList(eventiManifestazione,manifestazione,luoghi,psePerEventi);
         List<BigliettoMicroDTO> bigliettoMicroDTO = callPostForList("","","",null);
-        List<Biglietto> biglietti=bigliettiMapper.toBigliettoList(bigliettoMicroDTO,eventi,"");
+        bigliettiMapper.toBigliettoList(bigliettoMicroDTO,eventi,"");
         return calcolaStatistiche(manifestazione);
     }
 
@@ -143,6 +114,20 @@ public class VenditoreFacade implements GeneralCallService{
         response.setNomeManifestazione(m.getNome());
         response.setProfittoEventiDellaManifestazione(m.getEventi().stream().map(this::calcolaSingoloEvento).toList());
         return response;
+    }
+
+    public DatiEventiDTOResponse statisticheBigliettiPerEvento(long id_evento, Utente u){
+        if (!u.getRuolo().equals(Ruolo.VENDITORE))throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
+        EventoMicroDTO eventoDTO = callGet("",null,null,EventoMicroDTO.class);
+        ManifestazioneMicroDTO manifestazioneDTO = callGet("",null,null,ManifestazioneMicroDTO.class);
+        LuogoMicroDTO luogoDTO = callGet("",null,null,LuogoMicroDTO.class);
+        List<SettoreMicroDTO> settoriDTO = callGetForList("",null,null,SettoreMicroDTO[].class);
+        List<PrezzoSettoreEventoMicroDTO> pseDTO = callGetForList("",null,null,PrezzoSettoreEventoMicroDTO[].class);
+        Luogo luogo = luogoMapper.toLuogo(luogoDTO,settoriDTO);
+        if (manifestazioneDTO.getUtente_id() != u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore inserire un id evento corrispondente alla manifestazione: "+ manifestazioneDTO.getNome());
+        Manifestazione manifestazione = manifestazioneMapper.toManifestazione(manifestazioneDTO, u);
+        Evento evento = eventoMapper.toEvento(eventoDTO,manifestazione,luogo,pseDTO);
+        return calcolaSingoloEvento(evento);
     }
 
     private DatiEventiDTOResponse calcolaSingoloEvento(Evento e){
