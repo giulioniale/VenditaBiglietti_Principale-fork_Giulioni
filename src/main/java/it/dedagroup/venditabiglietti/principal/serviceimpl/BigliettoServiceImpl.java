@@ -16,86 +16,71 @@ import static it.dedagroup.venditabiglietti.principal.util.BigliettoUtilPath.*;
 public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallService {
     @Override
     public BigliettoMicroDTO saveBiglietto(AddBigliettoDTORequest biglietto) {
-        return callPost("",null,null,BigliettoMicroDTO.class);
+        return callPost(INSERT_BIGLIETTO_PATH,null,biglietto,BigliettoMicroDTO.class);
     }
 
     @Override
     public BigliettoMicroDTO modifyBiglietto(ModifyBigliettoDTORequest biglietto) {
-        return callPost("",null,null,BigliettoMicroDTO.class);
+        return callPost(MODIFY_BIGLIETTO_PATH,null,biglietto,BigliettoMicroDTO.class);
     }
 
     @Override
-    public void deleteByBiglietto(long id_biglietto) {
-        callPost("",null,null,Void.class);
+    public String deleteByBiglietto(long id_biglietto) {
+        return callPost(DELETE_BIGLIETTO_PATH+"/"+id_biglietto,null,null,String.class);
     }
 
     @Override
     public BigliettoMicroDTO findById(long id_biglietto) {
-        return callGet("",null,null,BigliettoMicroDTO.class);
+        return callPost(FIND_BY_ID_PATH+"/"+id_biglietto,null,null,BigliettoMicroDTO.class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAll() {
-        return callGetForList("",null,null,BigliettoMicroDTO[].class);
-    }
-
-    @Override
-    public BigliettoMicroDTO findByIdAndIdUtente(long id_biglietto, long id_utente) {
-        return callGet("",null,null,BigliettoMicroDTO.class);
+        return callGetForList(FIND_ALL_PATH,null,null,BigliettoMicroDTO[].class);
     }
 
     @Override
     public BigliettoMicroDTO findBySeriale(String seriale) {
-        return callGet("",null,null,BigliettoMicroDTO.class);
+        return callPost(FIND_BY_SERIALE_PATH+"/"+seriale,null,null,BigliettoMicroDTO.class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByPrezzoIsGreaterThanEqual(double prezzo) {
-        return callGetForList("",null,null,BigliettoMicroDTO[].class);
+        return callGetForList(FIND_ALL_BY_PREZZO_IS_GREATER_THAN_EQUAL_PATH+"/"+prezzo,null,null,BigliettoMicroDTO[].class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByPrezzoIsLessThanEqual(double prezzo) {
-        return callGetForList("",null,null,BigliettoMicroDTO[].class);
+        return callGetForList(FIND_ALL_BY_PREZZO_IS_LESS_THAN_EQUAL_PATH+prezzo,null,null,BigliettoMicroDTO[].class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByIdUtente(long id_utente) {
-        return callGetForList("",null,null,BigliettoMicroDTO[].class);
+        return callPostForList(FIND_ALL_BY_ID_UTENTE_PATH+"/"+id_utente,null,null,BigliettoMicroDTO[].class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByDataAcquisto(LocalDate dataAcquisto) {
-        return callGetForList("",null,null,BigliettoMicroDTO[].class);
-    }
-
-    @Override
-    public BigliettoMicroDTO findByIdAndIdPrezzoSettoreEvento(long id_biglietto, long id_prezzoSettoreEvento) {
-        return callGet("",null,null,BigliettoMicroDTO.class);
+        return callGetForList(FIND_ALL_BY_DATA_ACQUISTO+"/"+dataAcquisto,null,null,BigliettoMicroDTO[].class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoOrderByPrezzoAsc(long id_prezzoSettoreEvento) {
-        return callGetForList(BIGLIETTO_PATH + "/find/all/prezzo-settore-evento/id" + id_prezzoSettoreEvento, null, null, BigliettoMicroDTO[].class);
+        return callPostForList(BIGLIETTO_PATH + "/find/all/prezzo-settore-evento/id" + id_prezzoSettoreEvento, null, null, BigliettoMicroDTO[].class);
     }
 
     @Override
     public int countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNull(long id_prezzoSettoreEvento) {
-        return callGet(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
+        return callPost(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
     }
 
     @Override
     public List<Double> findDistinctPrezzoBigliettoByIdPrezzoSettoreEvento(long id_prezzoSettoreEvento) {
-        return callGetForList("",null,null,Double[].class);
-    }
-    @Override
-    public int countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNullAndPrezzo(long id_prezzoSettoreEvento, double prezzo) {
-        //return callGet(BIGLIETTO_PATH+"/count/data-acquisto/not-null/prezzo-settore-evento/id/"+id_prezzoSettoreEvento,null,null,Integer.class);
-        return 0;
+        return callPostForList(FIND_DISTINCT_PREZZO_BIGLIETTO_PATH+"/"+id_prezzoSettoreEvento,null,null,Double[].class);
     }
 
     @Override
     public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoIn(List<Long> idsPrezzoSettoreEvento) {
-        return null;
+        return callPostForList(FIND_ALL_BY_ID_PREZZO_SETTORE_EVENTO_IN_IDS,null,idsPrezzoSettoreEvento,BigliettoMicroDTO[].class);
     }
 }
