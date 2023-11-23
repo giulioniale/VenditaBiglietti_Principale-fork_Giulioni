@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.mapper;
 
 import it.dedagroup.venditabiglietti.principal.dto.response.PrezzoSettoreEventoMicroDTO;
+import it.dedagroup.venditabiglietti.principal.dto.response.PseDTOResponse;
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.PrezzoSettoreEvento;
 import it.dedagroup.venditabiglietti.principal.model.Settore;
@@ -23,6 +24,15 @@ public class PrezzoSettoreEventoMapper {
         pse.setBiglietti(new ArrayList<>());
         pse.setVersion(pse.getVersion());
         return pse;
+    }
+
+    public PseDTOResponse toPseDTOResponse(PrezzoSettoreEventoMicroDTO pseDTO, String descrizioneEvento, String nomeSettore){
+        PseDTOResponse response = new PseDTOResponse();
+        response.setId(pseDTO.getId());
+        response.setDescrizioneEvento(descrizioneEvento);
+        response.setNomeSettore(nomeSettore);
+        response.setPrezzo(pseDTO.getPrezzo());
+        return response;
     }
 
     public List<PrezzoSettoreEvento> toList(List<PrezzoSettoreEventoMicroDTO> pseDTO, List<Evento> e, List<Settore> s){
