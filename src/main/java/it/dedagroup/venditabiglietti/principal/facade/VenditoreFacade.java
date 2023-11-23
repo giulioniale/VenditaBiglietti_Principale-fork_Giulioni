@@ -104,7 +104,8 @@ public class VenditoreFacade implements GeneralCallService{
         List<PrezzoSettoreEventoMicroDTO> psePerEventi = callPostForList("","","",null);
         List<Luogo> luoghi=luogoMapper.toLuogoList(luoghiMicroDTO,settoreMicroDTO);
         List<Evento> eventi=eventoMapper.toEventoList(eventiManifestazione,manifestazione,luoghi,psePerEventi);
-        List<BigliettoMicroDTO> bigliettoMicroDTO = callPostForList("","","",null);
+        List<Long> idsPrezzoSettoreEvento = psePerEventi.stream().map(PrezzoSettoreEventoMicroDTO::getId).toList();
+        List<BigliettoMicroDTO> bigliettoMicroDTO = bigliettoServiceDef.findAllByIdPrezzoSettoreEventoIn(idsPrezzoSettoreEvento);
         bigliettiMapper.toBigliettoList(bigliettoMicroDTO,eventi,"");
         return calcolaStatistiche(manifestazione);
     }
