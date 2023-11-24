@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoRequest;
+import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 
 @SpringBootTest
@@ -46,7 +46,7 @@ class VenditaBigliettiPrincipalApplicationTests implements GeneralCallService{
 	@Order(2)
 	public void testAddEventoConDati() throws Exception{
 		//TODO capire perchè c'è uno username
-		String json = convertToJson(new AddEventoRequest(LocalDate.now(),LocalTime.now(),"Concerto Gemitaiz",1,1));
+		String json = convertToJson(new AddEventoDTORequest(LocalDate.now(),LocalTime.now(),"Concerto Gemitaiz",1,1));
 		mvc.perform(MockMvcRequestBuilders.post("/venditore/evento/add")
 				//la richiesta all'interno del body è un JSON
 				.contentType(MediaType.APPLICATION_JSON)

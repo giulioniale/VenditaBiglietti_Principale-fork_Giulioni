@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class ManifestazioneDTOResponse {
-
+@AllArgsConstructor
+@NoArgsConstructor
+public class CategoriaMicroDTO {
     private long id;
     private String nome;
-    private long idCategoria;
-    private long idUtente;
+    private boolean isCancellato;
+    private long version;
 }

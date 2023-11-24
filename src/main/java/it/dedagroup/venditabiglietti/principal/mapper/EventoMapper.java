@@ -1,9 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.mapper;
 
-import it.dedagroup.venditabiglietti.principal.dto.response.EventoDTOResponse;
-import it.dedagroup.venditabiglietti.principal.dto.response.EventoMicroDTO;
-import it.dedagroup.venditabiglietti.principal.dto.response.LuogoMicroDTO;
-import it.dedagroup.venditabiglietti.principal.dto.response.PrezzoSettoreEventoMicroDTO;
+import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Luogo;
 import it.dedagroup.venditabiglietti.principal.model.Manifestazione;
@@ -61,5 +58,25 @@ public class EventoMapper {
         List<PrezzoSettoreEvento> p=mapper.toList(pse,List.of(e),l.getSettori());
         e.setPrezziSettoreEvento(p);
         return e;
+    }
+
+    public MostraEventiFuturiDTOResponse mostraEventiFuturiResponseBuilder (EventoMicroDTO evento,LuogoMicroDTO luogo,ManifestazioneMicroDTO manifestazione){
+        MostraEventiFuturiDTOResponse response=new MostraEventiFuturiDTOResponse();
+        response.setLuogoEventoRiga1(luogo.getRiga1());
+        if(response.getRiga2()==null){
+            response.setRiga2("");
+        } else response.setRiga2(luogo.getRiga2());
+        response.setNomeManifestazione(manifestazione.getNome());
+        response.setComune(luogo.getComune());
+        if(response.getCap()==null){
+            response.setCap("");
+        } else response.setCap(luogo.getCap());
+        if(response.getProvincia()==null){
+            response.setProvincia("");
+        } else response.setProvincia(luogo.getProvincia());
+        response.setNomeEvento(evento.getDescrizione());
+        response.setDataEvento(evento.getData());
+        response.setOrarioEvento(evento.getOra());
+        return response;
     }
 }
