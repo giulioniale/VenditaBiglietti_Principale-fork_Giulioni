@@ -12,6 +12,6 @@ public class BigliettoUtilPath {
     public static final String FIND_ALL_BY_PREZZO_IS_LESS_THAN_EQUAL_PATH = BIGLIETTO_PATH+"/find/all/prezzo/less";
     public static final String FIND_ALL_BY_ID_UTENTE_PATH = BIGLIETTO_PATH+"/find/all/utente/id";
     public static final String FIND_ALL_BY_DATA_ACQUISTO = BIGLIETTO_PATH+"/find/all/data-acquisto";
-  public static final String FIND_DISTINCT_PREZZO_BIGLIETTO_PATH = BIGLIETTO_PATH+"/find/distinct/prezzo/prezzo-settore-evento";
+    public static final String FIND_DISTINCT_PREZZO_BIGLIETTO_PATH = BIGLIETTO_PATH+"/find/distinct/prezzo/prezzo-settore-evento";
     public static final String FIND_ALL_BY_ID_PREZZO_SETTORE_EVENTO_IN_IDS = BIGLIETTO_PATH+"/find/all/prezzo-settore-evento/in/ids";
 }

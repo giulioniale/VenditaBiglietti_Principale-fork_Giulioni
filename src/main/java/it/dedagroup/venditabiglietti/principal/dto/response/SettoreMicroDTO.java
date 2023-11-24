@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class SettoreMicroDTO {
     private Long id;
     private String nome;
-    private int posti;
+    private int capienza;
     private long idLuogo;
     private boolean isCancellato;
     private long version;
