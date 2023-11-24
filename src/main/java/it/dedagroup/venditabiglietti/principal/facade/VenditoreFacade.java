@@ -4,9 +4,7 @@ import it.dedagroup.venditabiglietti.principal.dto.request.*;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.mapper.BigliettiMapper;
 import it.dedagroup.venditabiglietti.principal.model.*;
-import it.dedagroup.venditabiglietti.principal.service.BigliettoServiceDef;
-import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
-import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
+import it.dedagroup.venditabiglietti.principal.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,52 +24,48 @@ public class VenditoreFacade implements GeneralCallService{
     private final BigliettiMapper bigliettiMapper;
     private final UtenteServiceDef utenteServiceDef;
     private final BigliettoServiceDef bigliettoServiceDef;
-    public final String EVENTO_PATH = "http://localhost:8081/evento";
-    public final String CATEGORIA_PATH = "http://localhost:8082/categoria";
-    public final String SETTORE_PATH = "http://localhost:8083/settore";
-    public final String MANIFESTAZIONE_PATH = "http://localhost:8084/manifestazione";
-    public final String PREZZO_SETTORE_EVENTO_PATH = "http://localhost:8086/prezzoSettoreEvento";
-
-    public final String LUOGO_PATH = "http://localhost:8088/biglietto";
+    private final CategoriaServiceDef categoriaServiceDef;
+    private final LuogoServiceDef luogoServiceDef;
 
     public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
         Utente u= utenteServiceDef.findById(request.getIdUtente());
         if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente!");
-        Categoria c=callGet(CATEGORIA_PATH+"trova/"+request.getIdCategoria(), null, null, Categoria.class);
+        Categoria c=categoriaServiceDef.findById(request.getIdCategoria());
         if(c==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Categoria non esistente!");
-//        Manifestazione m=callGetMANIFESTAZIONE_PATH+request.getNome(),null,null, Manifestazione.class);
-//        if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
-        return callPost(MANIFESTAZIONE_PATH+"add/", null, request, ManifestazioneDTOResponse.class);
+        Manifestazione m=manifestazioneServiceDef.findByNome(request.getNome());
+        if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
+
+        return manifestazioneServiceDef.save(request);
     }
 
     public List<LuogoDtoResponse> findAllLuogo(){
-        return callGetForList(LUOGO_PATH+"find/all", null, null, LuogoDtoResponse[].class);
+        return luogoServiceDef.findAll();
     }
 
     public EventoDTOResponse addEvento(AddEventoRequest request) {
-    	Manifestazione m = callGet(pathManifestazione+request.getIdManifestazione(),null,null,Manifestazione.class);
+    	Manifestazione m=manifestazioneServiceDef.findById(request.getIdManifestazione()) ;
     	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
-    	Luogo l = callGet(pathLuogo+"findById/"+request.getIdLuogo(),null,null,Luogo.class);
+    	Luogo l = luogoServiceDef.findLuogoById(request.getIdLuogo());
     	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
-    	return callPost(pathEvento+"salva",null,request,EventoDTOResponse.class);
+    	return eventoServiceDef.save(request);
     }
 
     public EventoDTOResponse deleteEvento(long idEvento) {
-        return callPost(EVENTO_PATH+idEvento,null,null,EventoDTOResponse.class);
+        return eventoServiceDef;
     }
 
     public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione) {
         //TODO rinominare le liste e il map
         //TODO cambiare i ritorni dei .class in MicroDTO.class
-        Manifestazione m = callGet(MANIFESTAZIONE_PATH+idManifestazione, null, null, Manifestazione.class);
+        Manifestazione m ;
         if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
         //TODO Implementare il findById da utenteServiceDef
-        Utente u= callGet("findById"+m.getUtente().getId(),null, null, Utente.class);
+        Utente u= m.getUtente();
         if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente");
-        List<Evento> lista = callGetForList("/trovaEventiDiManifestazione"+m.getId(), null, null, Evento[].class);
+        List<Evento> lista = m.getEventi();
         VisualizzaEventoManifestazioneDTOResponse vemDTO = new VisualizzaEventoManifestazioneDTOResponse();
         Map<String, String> map = new HashMap<>();
-        List<Luogo> list = lista.stream().map(e->callGet(LUOGO_PATH+"/findById"+e.getLuogo().getId(), null, null, Luogo.class)).toList();
+        List<Luogo> list = lista.stream().map(Evento::getLuogo).toList();
         for(int i = 0; i<list.size(); i++) {
             map.put(lista.get(i).getDescrizione(), list.get(i).getRiga1());
         }
