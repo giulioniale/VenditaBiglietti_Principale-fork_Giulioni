@@ -20,9 +20,10 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class VenditoreFacade implements GeneralCallService {
+public class VenditoreFacade implements GeneralCallService{
     //TODO controllare su github i vari url dei microservizi
     //TODO discutere della creazione di un service layer dove utilizzare le chiamate ai microservizi
+    private final BigliettiMapper bigliettiMapper;
     private final UtenteServiceDef utenteServiceDef;
     private final BigliettoServiceDef bigliettoServiceDef;
     private final ManifestazioneServiceDef manifestazioneServiceDef;
@@ -40,39 +41,33 @@ public class VenditoreFacade implements GeneralCallService {
 
     public final String LUOGO_PATH = "http://localhost:8088/biglietto";
 
-    //TODO Aggiungere il controllo del ruolo dell'utente
-    public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request) {
-        Utente u = utenteServiceDef.findById(request.getIdUtente());
-        if (u == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Utente non esistente!");
-        Categoria c = callGet(CATEGORIA_PATH + "trova/" + request.getIdCategoria(), null, null, Categoria.class);
-        if (c == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Categoria non esistente!");
-//        Manifestazione m=callGetMANIFESTAZIONE_PATH+request.getNome(),null,null, Manifestazione.class);
-//        if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
-        return callPost(MANIFESTAZIONE_PATH + "add/", null, request, ManifestazioneDTOResponse.class);
+    public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
+        Utente u= utenteServiceDef.findById(request.getIdUtente());
+        if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente!");
+        Categoria c=categoriaServiceDef.findById(request.getIdCategoria());
+        if(c==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Categoria non esistente!");
+        Manifestazione m=manifestazioneServiceDef.findByNome(request.getNome());
+        if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
+
+        return manifestazioneServiceDef.save(request);
     }
 
-    //TODO Aggiungere il controllo del ruolo dell'utente
-    public List<LuogoDtoResponse> findAllLuogo() {
-        return callGetForList(LUOGO_PATH + "find/all", null, null, LuogoDtoResponse[].class);
+    public List<LuogoDtoResponse> findAllLuogo(){
+        return luogoServiceDef.findAll();
     }
 
-    //TODO Aggiungere il controllo del ruolo dell'utente
-    //TODO Aggiungere l'id della manifestazione, evento è presente se manifestazione è presente
     public EventoDTOResponse addEvento(AddEventoRequest request) {
-        Manifestazione m = callGet(MANIFESTAZIONE_PATH + request.getIdManifestazione(), null, null, Manifestazione.class);
-        if (m == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Manifestazione insesistente");
-        Luogo l = callGet(LUOGO_PATH + "findById/" + request.getIdLuogo(), null, null, Luogo.class);
-        if (l == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Luogo insesistente");
-        return callPost(EVENTO_PATH + "salva", null, request, EventoDTOResponse.class);
+    	Manifestazione m=manifestazioneServiceDef.findById(request.getIdManifestazione()) ;
+    	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
+    	Luogo l = luogoServiceDef.findLuogoById(request.getIdLuogo());
+    	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
+    	return eventoServiceDef.save(request);
     }
 
-    //TODO Aggiungere il controllo del ruolo dell'utente
-    //TODO Aggiungere l'id della manifestazione, evento è presente se manifestazione è presente
     public EventoDTOResponse deleteEvento(long idEvento) {
-        return callPost(EVENTO_PATH + idEvento, null, null, EventoDTOResponse.class);
+        return eventoServiceDef;
     }
 
-    //TODO Aggiungere il controllo del ruolo dell'utente
     public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione) {
         //TODO rinominare le liste e il map
         //TODO cambiare i ritorni dei .class in MicroDTO.class
