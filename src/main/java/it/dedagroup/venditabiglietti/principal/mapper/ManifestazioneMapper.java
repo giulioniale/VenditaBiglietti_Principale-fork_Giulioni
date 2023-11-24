@@ -21,20 +21,11 @@ public class ManifestazioneMapper {
         return m;
     }
     
-    public ManifestazioneMicroDTO fromAddManifestazioneDTORequesttoMicroDTO(AddManifestazioneDTORequest request, Utente venditore ) {
-    	ManifestazioneMicroDTO m = new ManifestazioneMicroDTO();
-    	m.setNome(request.getNome());
-    	m.setIdCategoria(request.getIdCategoria());
-    	m.setIdUtente(request.getIdUtente());
-    	m.setCancellato(false);
-    	return m;
-    }
-    
     public ManifestazioneDTOResponse fromMicroDTOtoManifestazioneDTOResponse(ManifestazioneMicroDTO request, Utente venditore) {
     	ManifestazioneDTOResponse m = new ManifestazioneDTOResponse();
     	m.setId(request.getId());
     	m.setIdCategoria(request.getIdCategoria());
-    	m.setIdUtente(request.getIdUtente());
+    	m.setIdUtente(venditore.getId());
     	m.setNome(request.getNome());
     	return m;
     }

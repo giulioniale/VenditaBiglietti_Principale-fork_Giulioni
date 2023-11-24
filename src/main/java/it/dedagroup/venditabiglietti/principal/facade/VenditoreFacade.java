@@ -40,47 +40,39 @@ public class VenditoreFacade implements GeneralCallService{
 
     public final String LUOGO_PATH = "http://localhost:8088/biglietto";
 
-    public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
-        Utente u= utenteServiceDef.findById(request.getIdUtente());
-        if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente!");
-        CategoriaMicroDTO c=categoriaServiceDef.findById(request.getIdCategoria());
-        if(c==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Categoria non esistente!");
+    public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request, Utente u){
+        if (!u.getRuolo().equals(Ruolo.VENDITORE))throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
         ManifestazioneMicroDTO m=manifestazioneServiceDef.findByNome(request.getNome());
         if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
+        CategoriaMicroDTO c=categoriaServiceDef.findById(request.getIdCategoria());
         return manifestazioneMapper.fromMicroDTOtoManifestazioneDTOResponse(manifestazioneServiceDef.save(request), u);
     }
-
+    //TODO Modificare l'implementazione del filtro luoghi
     public List<LuogoMicroDTO> findAllLuogo(){
-    
         return luogoServiceDef.findAll();
     }
 
-    public EventoDTOResponse addEvento(AddEventoDTORequest request, String emailUtente) {
-        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
-        if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
-        LuogoMicroDTO l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(), null, LuogoMicroDTO.class);
-        if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo inesistente");
-        Utente u = utenteServiceDef.findByEmail(emailUtente);
+    public EventoDTOResponse addEvento(AddEventoDTORequest request, Utente u) {
         if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
+        LuogoMicroDTO l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(), null, LuogoMicroDTO.class);
         return callPost(EVENTO_PATH+"salva",request,EventoDTOResponse.class);
     }
 
-    public EventoDTOResponse deleteEvento(long idEvento, String emailUtente) {
-        EventoMicroDTO e = callGet(EVENTO_PATH+"findById"+idEvento, null, EventoMicroDTO.class);
-        if(e==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Evento inesistente");
-        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+e.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
-        if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
-        Utente u = utenteServiceDef.findByEmail(emailUtente);
+    public EventoDTOResponse deleteEvento(long idEvento, Utente u) {
         if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        EventoMicroDTO e = callGet(EVENTO_PATH+"findById"+idEvento, null, EventoMicroDTO.class);
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+e.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
         return callPut(EVENTO_PATH+"delete",idEvento,EventoDTOResponse.class);
     }
 
 
-   public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione, String emailUtente) {
+   public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione, Utente u) {
+       if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
         ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH + idManifestazione,null, ManifestazioneMicroDTO.class);
-        if (m == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Manifestazione inesistente");
-        Utente u = utenteServiceDef.findByEmail(emailUtente);
-        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+       if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
         List<EventoMicroDTO> listaEventi = callGetForList("/trovaEventiDiManifestazione" + m.getId(), null, EventoMicroDTO[].class);
         VisualizzaEventoManifestazioneDTOResponse vemDTO = new VisualizzaEventoManifestazioneDTOResponse();
         Map<String, String> eventiManifestazione = new HashMap<>();
@@ -94,7 +86,6 @@ public class VenditoreFacade implements GeneralCallService{
         return vemDTO;
     }
 
-    //TODO sistemare l'implementazione delle statistiche dei biglietti per la manifestazione
     public StatisticheManifestazioneDTOResponse statisticheBigliettiPerManifestazione(long id_manifestazione, Utente u) {
         if (!u.getRuolo().equals(Ruolo.VENDITORE))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");

@@ -95,4 +95,6 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     public List<LuogoMicroDTO> findAllLuogoByNazionalitaAndComune(String nazionalita, String comune) {
         return callGetForList(pathLuogo+"find/all/nazionalita&comune/"+nazionalita+"/"+comune,null,LuogoMicroDTO[].class);
     }
+
+
 }

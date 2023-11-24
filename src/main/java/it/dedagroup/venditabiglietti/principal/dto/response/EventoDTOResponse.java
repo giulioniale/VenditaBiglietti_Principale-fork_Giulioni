@@ -14,5 +14,4 @@ public class EventoDTOResponse {
 	private String descrizione;
 	private long idManifestazione;
 	private long idLuogo;
-	private List<Long> idPrezzoSettoreEvento;
 }
