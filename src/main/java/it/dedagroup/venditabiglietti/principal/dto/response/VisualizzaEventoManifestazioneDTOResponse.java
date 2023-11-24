@@ -25,6 +25,7 @@ public class VisualizzaEventoManifestazioneDTOResponse {
 		
 		eventoManifestazione : [
 				Festival : Via delle vie 8
+				(nomeEvento):(luogo)
 		]
 		
 		organizzatore : m.c@ded.it

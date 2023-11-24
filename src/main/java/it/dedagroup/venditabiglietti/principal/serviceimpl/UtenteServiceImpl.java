@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.repository.UtenteRepository;
-import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import jakarta.transaction.Transactional;
 
@@ -77,8 +76,8 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 
 	@Override
 	public Utente findByEmail(String email) {
-		return callPost("http://localhost:8085/email/"+email,  email, Utente.class);
-	}
+		return callPost("http://localhost:8085/email/"+email,  email, Utente.class);}
+	
 	@Override
 	public Utente login(String email,String password) {
 		//Utente u = callPost(pathUtente + "/login", null, LoginDTORequest.class, Utente.class);

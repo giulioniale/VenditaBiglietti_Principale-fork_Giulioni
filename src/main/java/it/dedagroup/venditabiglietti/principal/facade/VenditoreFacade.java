@@ -5,7 +5,6 @@ import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.mapper.*;
 import it.dedagroup.venditabiglietti.principal.model.*;
 import it.dedagroup.venditabiglietti.principal.service.*;
-import it.dedagroup.venditabiglietti.principal.serviceimpl.CategoriaServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -44,49 +43,54 @@ public class VenditoreFacade implements GeneralCallService{
     public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
         Utente u= utenteServiceDef.findById(request.getIdUtente());
         if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente!");
-        Categoria c=categoriaServiceDef.findById(request.getIdCategoria());
+        CategoriaMicroDTO c=categoriaServiceDef.findById(request.getIdCategoria());
         if(c==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Categoria non esistente!");
-        Manifestazione m=manifestazioneServiceDef.findByNome(request.getNome());
+        ManifestazioneMicroDTO m=manifestazioneServiceDef.findByNome(request.getNome());
         if(m!=null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione già esistente!");
-
-        return manifestazioneServiceDef.save(request);
+        return manifestazioneMapper.fromMicroDTOtoManifestazioneDTOResponse(manifestazioneServiceDef.save(request), u);
     }
 
-    public List<LuogoDtoResponse> findAllLuogo(){
+    public List<LuogoMicroDTO> findAllLuogo(){
+    
         return luogoServiceDef.findAll();
     }
 
-    public EventoDTOResponse addEvento(AddEventoRequest request) {
-    	Manifestazione m=manifestazioneServiceDef.findById(request.getIdManifestazione()) ;
-    	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
-    	Luogo l = luogoServiceDef.findLuogoById(request.getIdLuogo());
-    	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
-    	return eventoServiceDef.save(request);
+    public EventoDTOResponse addEvento(AddEventoDTORequest request, String emailUtente) {
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
+        LuogoMicroDTO l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(), null, LuogoMicroDTO.class);
+        if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo inesistente");
+        Utente u = utenteServiceDef.findByEmail(emailUtente);
+        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        return callPost(EVENTO_PATH+"salva",request,EventoDTOResponse.class);
     }
 
-    public EventoDTOResponse deleteEvento(long idEvento) {
-        return eventoServiceDef;
+    public EventoDTOResponse deleteEvento(long idEvento, String emailUtente) {
+        EventoMicroDTO e = callGet(EVENTO_PATH+"findById"+idEvento, null, EventoMicroDTO.class);
+        if(e==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Evento inesistente");
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+e.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
+        Utente u = utenteServiceDef.findByEmail(emailUtente);
+        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        return callPut(EVENTO_PATH+"delete",idEvento,EventoDTOResponse.class);
     }
 
-    public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione) {
-        //TODO rinominare le liste e il map
-        //TODO cambiare i ritorni dei .class in MicroDTO.class
-        //TODO Mi riprendo l'utente e controllo il ruolo
-        Manifestazione m = callGet(MANIFESTAZIONE_PATH + idManifestazione,null, Manifestazione.class);
+
+   public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione, String emailUtente) {
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH + idManifestazione,null, ManifestazioneMicroDTO.class);
         if (m == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Manifestazione inesistente");
-        //TODO Implementare il findById da utenteServiceDef
-        Utente u = callGet("findById" + m.getUtente().getId(),null, Utente.class);
-        if (u == null) throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Utente non esistente");
-        List<Evento> lista = callGetForList("/trovaEventiDiManifestazione" + m.getId(), null, Evento[].class);
+        Utente u = utenteServiceDef.findByEmail(emailUtente);
+        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        List<EventoMicroDTO> listaEventi = callGetForList("/trovaEventiDiManifestazione" + m.getId(), null, EventoMicroDTO[].class);
         VisualizzaEventoManifestazioneDTOResponse vemDTO = new VisualizzaEventoManifestazioneDTOResponse();
-        Map<String, String> map = new HashMap<>();
-        List<Luogo> list = lista.stream().map(e -> callGet(LUOGO_PATH + "/findById" + e.getLuogo().getId(), null, null, Luogo.class)).toList();
-        for (int i = 0; i < list.size(); i++) {
-            map.put(lista.get(i).getDescrizione(), list.get(i).getRiga1());
+        Map<String, String> eventiManifestazione = new HashMap<>();
+        List<LuogoMicroDTO> listaLuoghi = listaEventi.stream().map(e -> callGet(LUOGO_PATH + "/findById/" + e.getIdLuogo(),  null, LuogoMicroDTO.class)).toList();
+        for (int i = 0; i < listaLuoghi.size(); i++) {
+        	eventiManifestazione.put(listaEventi.get(i).getDescrizione(), listaLuoghi.get(i).getRiga1());
         }
         vemDTO.setNomeManifestazione(m.getNome());
-        vemDTO.setNomeOrganizzatore(m.getUtente().getNome());
-        vemDTO.setEventiManifestazione(map);
+        vemDTO.setNomeOrganizzatore(u.getNome());
+        vemDTO.setEventiManifestazione(eventiManifestazione);
         return vemDTO;
     }
 
@@ -167,7 +171,7 @@ public class VenditoreFacade implements GeneralCallService{
         PrezzoSettoreEventoMicroDTO pseDTO = callPost(PREZZO_SETTORE_EVENTO_PATH + "/find/id" + request.getIdPse(), null, PrezzoSettoreEventoMicroDTO.class);
 
         callPost(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-evento?idPse="+ pseDTO.getId() + "&idEvento="+ eventoDTO.getId(),null,Void.class);
-        callPost(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-settore?idPse=" + pseDTO.getId() + "&idSettore=" + settoreDTO.getId(), null, null, Void.class);
+        callPost(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-settore?idPse=" + pseDTO.getId() + "&idSettore=" + settoreDTO.getId(), null, Void.class);
         callGet(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-prezzo",  request, SettoreMicroDTO.class);
 
         PrezzoSettoreEventoMicroDTO pseDTOmodificato = callPost(PREZZO_SETTORE_EVENTO_PATH+"/find/id"+pseDTO.getId(),null, PrezzoSettoreEventoMicroDTO.class);
