@@ -12,7 +12,7 @@ public class CategoriaServiceImpl implements CategoriaServiceDef, GeneralCallSer
 	@Override
 	public void aggiungiCategoria(AggiungiCategoriaDtoRequest request) {
 		String path = "http://localhost:8082/categoria/aggiungicategoria";
-		callPost(path, null, request , Void.class);
+		callPost(path, request , Void.class);
 		
 	}
 

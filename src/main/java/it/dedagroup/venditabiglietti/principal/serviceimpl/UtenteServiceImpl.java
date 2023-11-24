@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
@@ -23,76 +24,68 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 
 	private final String pathUtente="http://localhost:8092/utente";
 
-	@Autowired
-	private UtenteRepository utenteRepository;
-
 	//TODO pulire i metodi togliendo le duplicazioni
 
 
 
 	@Override
 	public Utente findByEmailAndPassword(String email, String password) {
-		return utenteRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		return callPost(pathUtente + "/trovaPerEmailEPassword", null, Utente.class);
 	}
 
 	@Override
 	public Utente findByTelefono(String telefono) {
-		return utenteRepository.findByTelefono(telefono).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		return callPost(pathUtente + "/trovaPerTelefono", null, Utente.class);
 	}
 
 	@Override
 	public Utente findByData_Di_Nascita(LocalDate data_di_nascita) {
-		return utenteRepository.findByDataDiNascita(data_di_nascita).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		return callPost(pathUtente + "/trovaPerDataDiNascita", null, Utente.class);
 	}
 
 	@Override
 	public Utente findByNomeAndCognome(String nome, String cognome) {
-		return utenteRepository.findByNomeAndCognome(nome, cognome).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		return callPost(pathUtente + "/trovaPerNomeECognome", null, Utente.class);
 	}
 
 	@Override
 	public Utente findByRuolo(Ruolo ruolo) {
-		return utenteRepository.findByRuolo(ruolo).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		return callPost(pathUtente + "/trovaPerRuolo", null, Utente.class);
 	}
 
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public void aggiungiUtente(Utente utente) {
-		callPost(pathUtente + "/aggiungiUtente", null, utente, Void.class);
+		callPost(pathUtente + "/aggiungiUtente", utente, Void.class);
 	}
 
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public Utente modificaUtente(Utente utente) {
-		return utenteRepository.save(utente);
+		return callPost(pathUtente + "/modificaUtente", utente, Utente.class);
 	}
 
 	@Override
 	@Transactional(rollbackOn = DataAccessException.class)
 	public Utente eliminaUtente(long id) {
-		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		Utente u = callPost(pathUtente + "/trovaPerId/" + id, id, Utente.class);
 		u.setCancellato(true);
-		return utenteRepository.save(u);
+		return callPost(pathUtente + "/modificaUtente", u, Utente.class);
 	}
 
 	@Override
 	public Utente findByEmail(String email) {
-		return callPost("http://localhost:8085/email/"+email, null, email, Utente.class);
-	}
-	@Override
-	public Utente login(String email,String password) {
-		//Utente u = callPost(pathUtente + "/login", null, LoginDTORequest.class, Utente.class);
-		return null;
+		return callPost(pathUtente + "/email/" + email, email, Utente.class);
 	}
 
 	@Override
 	public Utente findById(long id) {
-		return utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		return callPost(pathUtente + "/trovaPerId/" + id, id, Utente.class);
 	}
 
 	@Override
 	public String disattivaAdmin(long id) {
-		Utente u = utenteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente con id "+ id + " non trovato"));
+		Utente u = callPost(pathUtente + "/trovaPerId/" + id, id, Utente.class);
 		if (!u.getRuolo().equals(Ruolo.ADMIN)) {
 			throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"l'utente ha ruolo " + u.getRuolo() + ", impossibile disattivare ruolo ADMIN");
 		} else {
@@ -105,7 +98,12 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 	@Override
 	//torna il token
 	public String login(LoginDTORequest request){
-		return callPost(pathUtente + "/login", null, request, String.class);
+		return callPost(pathUtente + "/login", request, String.class);
+	}
+
+	public List<Utente> findByAllId(List<Long>ids){
+		Utente [] utenti = callPost(pathUtente + "/trovaPerListaIds", ids, Utente[].class);
+		return List.of(utenti);
 	}
 
 

@@ -13,14 +13,14 @@ public class ManifestazioneServiceImpl implements ManifestazioneServiceDef, Gene
 	
 	@Override
 	public void eliminaManifestazione(long id) {
-		callPost(pathManifestazione+"manifestazione/delete/"+id, null, id, String.class);
+		callPost(pathManifestazione+"manifestazione/delete/"+id, id, String.class);
 		
 	}
 
 	@Override
 	public ManifestazioneMicroDTO findById(long idManifestazione) {
 		String mioPath=pathManifestazione+"manifestazione/find/"+idManifestazione;
-		return callGet(mioPath,null,idManifestazione,ManifestazioneMicroDTO.class);
+		return callGet(mioPath,idManifestazione,ManifestazioneMicroDTO.class);
 	}
 
 

@@ -4,6 +4,8 @@ package it.dedagroup.venditabiglietti.principal.serviceimpl;
 import java.util.List;
 
 import it.dedagroup.venditabiglietti.principal.dto.response.EventoMicroDTO;
+import it.dedagroup.venditabiglietti.principal.dto.request.EventiFiltratiDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.EventiFiltratiDTOResponse;
 import org.springframework.stereotype.Service;
 
 import it.dedagroup.venditabiglietti.principal.model.Evento;
@@ -17,15 +19,14 @@ public class EventoServiceImpl implements EventoServiceDef, GeneralCallService{
 
 	@Override
 	public void eliminaEvento(long id) {
-		callPost(servicePath+"delete/"+id, null, id, String.class);
+		callPost(servicePath+"delete/"+id, id, String.class);
 		
 	}
-
 
     @Override
     public List<EventoMicroDTO> trovaEventiFuturi() {
         String mioPath=servicePath+"trovaEventiFuturi";
-        List<EventoMicroDTO> listaEventiFuturi =callGetForList(mioPath,null,null, EventoMicroDTO[].class);
+        List<EventoMicroDTO> listaEventiFuturi =callGetForList(mioPath,null, EventoMicroDTO[].class);
         return listaEventiFuturi;
     }
 

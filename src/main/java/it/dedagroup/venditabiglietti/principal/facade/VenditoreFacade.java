@@ -4,10 +4,7 @@ import it.dedagroup.venditabiglietti.principal.dto.request.*;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.mapper.*;
 import it.dedagroup.venditabiglietti.principal.model.*;
-import it.dedagroup.venditabiglietti.principal.service.BigliettoServiceDef;
-import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
-import it.dedagroup.venditabiglietti.principal.service.ManifestazioneServiceDef;
-import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
+import it.dedagroup.venditabiglietti.principal.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -27,8 +24,7 @@ public class VenditoreFacade implements GeneralCallService{
     private final UtenteServiceDef utenteServiceDef;
     private final BigliettoServiceDef bigliettoServiceDef;
     private final ManifestazioneServiceDef manifestazioneServiceDef;
-
-    private final BigliettiMapper bigliettiMapper;
+    private final CategoriaServiceDef categoriaServiceDef;
     private final ManifestazioneMapper manifestazioneMapper;
     private final EventoMapper eventoMapper;
     private final LuogoMapper luogoMapper;
@@ -40,6 +36,7 @@ public class VenditoreFacade implements GeneralCallService{
     public final String PREZZO_SETTORE_EVENTO_PATH = "http://localhost:8086/prezzoSettoreEvento";
 
     public final String LUOGO_PATH = "http://localhost:8088/biglietto";
+    /*
 
     public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request){
         Utente u= utenteServiceDef.findById(request.getIdUtente());
@@ -173,4 +170,6 @@ public class VenditoreFacade implements GeneralCallService{
         PrezzoSettoreEventoMicroDTO pseDTOmodificato = callPost(PREZZO_SETTORE_EVENTO_PATH+"/find/id"+pseDTO.getId(),null,null, PrezzoSettoreEventoMicroDTO.class);
         return prezzoSettoreEventoMapper.toPseDTOResponse(pseDTOmodificato,eventoDTO.getDescrizione(),settoreDTO.getNome());
     }
+
+     */
 }

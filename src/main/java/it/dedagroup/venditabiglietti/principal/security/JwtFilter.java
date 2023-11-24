@@ -25,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter implements GeneralCallServic
         String authCode = request.getHeader("Authorization");
         if(authCode != null && authCode.startsWith("Bearer ")){
             String token = authCode.substring(7);
-            Utente u = callPost(pathUtente+"/find/"+token,null,null,Utente.class);
+            Utente u = callPost(pathUtente+"/find/"+token,null,Utente.class);
             if(SecurityContextHolder.getContext().getAuthentication() == null){
                 UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(u, null, u.getAuthorities());
                 upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

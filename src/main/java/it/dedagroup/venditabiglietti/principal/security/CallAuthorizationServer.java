@@ -13,14 +13,14 @@ public class CallAuthorizationServer implements GeneralCallService {
 
     public Utente getUserDetail(String token){
         String path="http:localhost:80123/find/"+token;
-        Utente u=callPost(path,null,null, Utente.class);
+        Utente u=callPost(path,null, Utente.class);
         return u;
 
     }
 
     public UserDetails findByEmail(String email) {
         String path="http:localhost:80123/email/"+email;
-        Utente u=callPost(path,null,null, Utente.class);
+        Utente u=callPost(path,null, Utente.class);
         return u;
     }
 }
