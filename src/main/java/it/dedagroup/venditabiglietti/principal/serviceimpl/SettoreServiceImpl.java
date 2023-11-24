@@ -17,14 +17,14 @@ public class SettoreServiceImpl implements SettoreServiceDef, GeneralCallService
 	String path="http://localhost:8083/settore";
 	@Override
 	public void aggiungiSettore(AggiungiSettoreDtoRequest dto) {
-		String mioPath=path+"/aggiungiSettore";
-		callPost(mioPath, null, dto, Void.class);
+        String mioPath=path+"/aggiungiSettore";
+		callPost(mioPath, dto, Void.class);
 	}
 
 	@Override
 	public List<SettoreMicroDTO> findAllByIdLuogo(long idLuogo) {
 		String mioPath=path+"/findByIdLuogo/"+idLuogo;
-		return callGetForList(mioPath,null,idLuogo,SettoreMicroDTO[].class);
+		return callGetForList(mioPath,idLuogo,SettoreMicroDTO[].class);
 	}
 
 

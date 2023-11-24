@@ -17,7 +17,7 @@ public class EventoServiceImpl implements EventoServiceDef, GeneralCallService{
 
 	@Override
 	public void eliminaEvento(long id) {
-		callPost(servicePath+"delete/"+id, null, id, String.class);
+		callPost(servicePath+"delete/"+id, id, String.class);
 		
 	}
 
@@ -25,8 +25,8 @@ public class EventoServiceImpl implements EventoServiceDef, GeneralCallService{
     @Override
     public List<EventoMicroDTO> trovaEventiFuturi() {
         String mioPath=servicePath+"trovaEventiFuturi";
-        List<EventoMicroDTO> listaEventiFuturi =callGetForList(mioPath,null,null, EventoMicroDTO[].class);
-        return listaEventiFuturi;
+        EventoMicroDTO[] listaEventiFuturi =callGet(mioPath,null, EventoMicroDTO[].class);
+        return List.of(listaEventiFuturi);
     }
 
 }
