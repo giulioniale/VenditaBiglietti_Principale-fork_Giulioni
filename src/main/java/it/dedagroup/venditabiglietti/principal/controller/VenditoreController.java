@@ -32,6 +32,7 @@ public class VenditoreController {
 
 	@Autowired
 	VenditoreFacade vendFac;
+	/*
 
 	@PostMapping("/evento/add")
 	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoRequest eventoRequest){
@@ -98,5 +99,7 @@ public class VenditoreController {
 	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid PrezzoSettoreEventoDTORequest request, UsernamePasswordAuthenticationToken upat) {
 		return ResponseEntity.ok(vendFac.setPrezzoSettoreEvento(request, ((Utente)upat.getPrincipal())));
 	}
+
+	 */
 
 }
