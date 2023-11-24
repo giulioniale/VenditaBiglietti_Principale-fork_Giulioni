@@ -46,7 +46,7 @@ class VenditaBigliettiPrincipalApplicationTests implements GeneralCallService{
 	@Order(2)
 	public void testAddEventoConDati() throws Exception{
 		//TODO capire perchè c'è uno username
-		String json = convertToJson(new AddEventoRequest("",LocalDate.now(),LocalTime.now(),"Concerto Gemitaiz",1,1));
+		String json = convertToJson(new AddEventoRequest(LocalDate.now(),LocalTime.now(),"Concerto Gemitaiz",1,1));
 		mvc.perform(MockMvcRequestBuilders.post("/venditore/evento/add")
 				//la richiesta all'interno del body è un JSON
 				.contentType(MediaType.APPLICATION_JSON)
@@ -66,4 +66,10 @@ class VenditaBigliettiPrincipalApplicationTests implements GeneralCallService{
 		.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 		.andDo(print());
 	}
+	
+//	@Test
+//	@Order(4)
+//	public void testVisualizzaEventiOrganizzati() throws Exception{
+//		
+//	}
 }

@@ -53,42 +53,55 @@ public class VenditoreFacade implements GeneralCallService{
     public List<LuogoDtoResponse> findAllLuogo(){
         return callGetForList(LUOGO_PATH+"find/all", null, null, LuogoDtoResponse[].class);
     }
-    //TODO Aggiungere il controllo del ruolo dell'utente
+    
+    
+    
+    
     //TODO Aggiungere l'id della manifestazione, evento è presente se manifestazione è presente
-    public EventoDTOResponse addEvento(AddEventoRequest request) {
-    	Manifestazione m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(),null,null,Manifestazione.class);
+    public EventoDTOResponse addEvento(AddEventoRequest request, Utente u) {
+    	
+    	if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "L'utente con Username " + u.getUsername() +  " non è un venditore");
+    	ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(),null,null,ManifestazioneMicroDTO.class);
     	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione insesistente");
-    	Luogo l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(),null,null,Luogo.class);
+    	LuogoMicroDTO l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(),null,null,LuogoMicroDTO.class);
     	if(l==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Luogo insesistente");
     	return callPost(EVENTO_PATH+"salva",null,request,EventoDTOResponse.class);
     }
-    //TODO Aggiungere il controllo del ruolo dell'utente
+    
+    
+    
     //TODO Aggiungere l'id della manifestazione, evento è presente se manifestazione è presente
     public EventoDTOResponse deleteEvento(long idEvento) {
+        Evento e = callGet(EVENTO_PATH+"/id/"+idEvento,null, null, Evento.class);
+        if(e==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Evento inesistente");
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+"/id/"+e.getManifestazione().getId(), null, null ,ManifestazioneMicroDTO.class);
+    	if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
+    	Utente u = utenteServiceDef.findById(m.getUtente_id());
+    	if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "L'utente con Username " + u.getUsername() +  " non è un venditore");
         return callPost(EVENTO_PATH+idEvento,null,null,EventoDTOResponse.class);
     }
-    //TODO Aggiungere il controllo del ruolo dell'utente
+    
+    //TODO cambiare i ritorni dei .class in MicroDTO.class
     public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione) {
-        //TODO rinominare le liste e il map
-        //TODO cambiare i ritorni dei .class in MicroDTO.class
-        //TODO Mi riprendo l'utente e controllo il ruolo
-        Manifestazione m = callGet(MANIFESTAZIONE_PATH+idManifestazione, null, null, Manifestazione.class);
+        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+idManifestazione, null, null, ManifestazioneMicroDTO.class);
         if(m==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Manifestazione inesistente");
-        //TODO Implementare il findById da utenteServiceDef
-        Utente u= callGet("findById"+m.getUtente().getId(),null, null, Utente.class);
-        if (u==null) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente");
-        List<Evento> lista = callGetForList("/trovaEventiDiManifestazione"+m.getId(), null, null, Evento[].class);
+        Utente u= utenteServiceDef.findById(m.getUtente_id());
+        if (u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatusCode.valueOf(400),"Utente non esistente");
+        List<Evento> listaEventi = callGetForList(EVENTO_PATH+"/trovaEventiDiManifestazione"+m.getId(), null, null, Evento[].class);
         VisualizzaEventoManifestazioneDTOResponse vemDTO = new VisualizzaEventoManifestazioneDTOResponse();
         Map<String, String> map = new HashMap<>();
-        List<Luogo> list = lista.stream().map(e->callGet(LUOGO_PATH+"/findById"+e.getLuogo().getId(), null, null, Luogo.class)).toList();
-        for(int i = 0; i<list.size(); i++) {
-            map.put(lista.get(i).getDescrizione(), list.get(i).getRiga1());
+        List<Luogo> listaLuoghi = listaEventi.stream().map(e->callGet(LUOGO_PATH+"/findById"+e.getLuogo().getId(), null, null, Luogo.class)).toList();
+        for(int i = 0; i<listaLuoghi.size(); i++) {
+            map.put(listaEventi.get(i).getDescrizione(), listaLuoghi.get(i).getRiga1());
         }
         vemDTO.setNomeManifestazione(m.getNome());
-        vemDTO.setNomeOrganizzatore(m.getUtente().getNome());
+        vemDTO.setNomeOrganizzatore(u.getNome());
         vemDTO.setEventiManifestazione(map);
         return vemDTO;
     }
+    
+    
+    
     //TODO Possibile rimozione del metodo statisticheBigliettiPerEventoSettorePrezzoSettoreEvento
     /*
     public StatisticheBigliettiDTOResponse statisticheBigliettiPerEventoSettorePrezzoSettoreEvento(EventoSettorePseDTORequest request){

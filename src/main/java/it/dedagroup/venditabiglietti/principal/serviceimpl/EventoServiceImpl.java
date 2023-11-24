@@ -12,16 +12,14 @@ import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 @Service
 public class EventoServiceImpl implements EventoServiceDef, GeneralCallService{
 	
+    private String servicePath="http://localhost:8081/evento/";
 
+	
 	@Override
 	public void eliminaEvento(long id) {
 		callPost(servicePath+"delete/"+id, null, id, String.class);
 		
 	}
-
-
-
-    private String servicePath="http://localhost:8081/evento/";
 
     @Override
     public List<Evento> trovaEventiFuturi() {

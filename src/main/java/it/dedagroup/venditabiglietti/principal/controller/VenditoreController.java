@@ -28,11 +28,12 @@ public class VenditoreController {
 	VenditoreFacade vendFac;
 
 	@PostMapping("/evento/add")
-	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoRequest eventoRequest){
+	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoRequest eventoRequest , UsernamePasswordAuthenticationToken upat){
 		//TODO L'aggiunta dell'evento si basa su una manifestazione già presente
 		//TODO Inserire l'upat per riprendere l'email
 		//TODO aggiungere il controllo tramite email per capire se l'aggiunta della manifestazione venga da un venditore
-		return ResponseEntity.ok(vendFac.addEvento(eventoRequest));
+		
+		return ResponseEntity.ok(vendFac.addEvento(eventoRequest,(Utente)upat.getPrincipal()));
 	}
 
 	@PostMapping("/evento/delete/{id}")
