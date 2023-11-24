@@ -1,7 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
 import it.dedagroup.venditabiglietti.principal.dto.request.AddManifestazioneDTORequest;
-import it.dedagroup.venditabiglietti.principal.dto.response.ManifestazioneDTOResponse;
 import it.dedagroup.venditabiglietti.principal.dto.response.ManifestazioneMicroDTO;
 import org.springframework.stereotype.Service;
 

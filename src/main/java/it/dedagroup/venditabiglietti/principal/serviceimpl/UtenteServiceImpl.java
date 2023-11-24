@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.repository.UtenteRepository;
-import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import jakarta.transaction.Transactional;
 

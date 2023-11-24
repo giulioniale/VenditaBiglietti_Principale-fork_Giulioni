@@ -6,7 +6,6 @@ import java.util.List;
 import it.dedagroup.venditabiglietti.principal.dto.response.EventoMicroDTO;
 import org.springframework.stereotype.Service;
 
-import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.service.EventoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 
