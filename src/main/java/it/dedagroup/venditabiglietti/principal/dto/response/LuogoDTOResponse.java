@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class LuogoDtoResponse {
+public class LuogoDTOResponse {
 
     private long id;
     private String riga1;

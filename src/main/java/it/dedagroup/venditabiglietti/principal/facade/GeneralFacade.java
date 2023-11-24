@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class GeneralFacade implements GeneralCallService{
     LuogoServiceDef lServ;
     @Autowired
     EventoMapper evMap;
+
     @Autowired
     UtenteMapper uMap;
     @Autowired
@@ -44,6 +46,7 @@ public class GeneralFacade implements GeneralCallService{
         Utente uNew =uMap.toUtenteCliente(req);
         uServ.aggiungiUtente(uNew);
     }
+
     // TODO valutare sui cicli nestati se fare le lambda
     public List<MostraEventiFuturiDTOResponse> trovaEventiFuturiConBiglietti(){
         List<EventoMicroDTO> eventiFuturi = eServ.trovaEventiFuturi();
