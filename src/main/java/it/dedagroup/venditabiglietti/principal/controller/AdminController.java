@@ -5,10 +5,13 @@ import static it.dedagroup.venditabiglietti.principal.util.UtilPath.AGGIUNGI_SET
 import static it.dedagroup.venditabiglietti.principal.util.UtilPath.AGGIUNGI_UTENTE_VENDITORE;
 import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_UTENTE_CLIENTE;
 import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_UTENTE_VENDITORE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_MANIFESTAZIONE;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.ELIMINA_EVENTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,5 +68,20 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 	
+	@PostMapping(ELIMINA_MANIFESTAZIONE+"/{id}")
+	public ResponseEntity<Void> eliminaManifestazione(
+		@PathVariable long id) {
+		facade.eliminaManifestazione(id);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
+	@PostMapping(ELIMINA_EVENTO+"/{id}")
+	public ResponseEntity<Void> eliminaEvento(
+			@PathVariable long id) {
+		facade.eliminaEvento(id);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+	
+
 
 }

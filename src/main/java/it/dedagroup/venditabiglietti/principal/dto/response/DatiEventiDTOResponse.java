@@ -9,7 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatisticheManifestazioneDTOResponse {
-    private String nomeManifestazione;
-    private List<DatiEventiDTOResponse> profittoEventiDellaManifestazione;
+public class DatiEventiDTOResponse {
+    private String descrizione;
+    private List<SettoriPerSingoloLuogo> settoriPerLuogo;
+    private String viaLuogo;
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AddManifestazioneDTORequest {
-
     private String nome;
     private long idCategoria;
     private long idUtente;

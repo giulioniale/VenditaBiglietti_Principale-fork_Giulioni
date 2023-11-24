@@ -2,6 +2,7 @@ package it.dedagroup.venditabiglietti.principal.service;
 
 import java.time.LocalDate;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 
@@ -19,6 +20,6 @@ public interface UtenteServiceDef {
 	Utente login(String email,String password);
 	Utente findById(long id);
 	String disattivaAdmin(long id);
-
-
+	//torna il token
+	String login(LoginDTORequest request);
 }

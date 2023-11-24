@@ -12,5 +12,5 @@ public class PrezzoSettoreEventoMicroDTO {
     private long idSettore;
     private long idEvento;
     private double prezzo;
-    private boolean isAvailable = true;
+    private boolean isCancellato;
 }

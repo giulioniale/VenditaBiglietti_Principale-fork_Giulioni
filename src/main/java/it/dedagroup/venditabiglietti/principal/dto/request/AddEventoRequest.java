@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddEventoRequest {
-	
+	private String username;
 	private LocalDate data;
 	private LocalTime ora;
 	private String descrizione;

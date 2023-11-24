@@ -6,7 +6,7 @@ public class UtilPath {
 	public static final String SUPER_ADMIN_PATH = "/superAdmin";
 	
 	public static final String AGGIUNGI_ADMIN = "admin/add";
-	public static final String DISATTIVA_ADMIN = "admin/deactivate/{id}";
+	public static final String DISATTIVA_ADMIN = "admin/deactivate";
 	
 	//-------------------------------------------ADMIN------------------------------------------------------/
 	public static final String ADMIN_PATH = "/admin";
@@ -17,10 +17,15 @@ public class UtilPath {
 	public static final String AGGIUNGI_CATEGORIA = "/aggiungi-categoria";
 	public static final String AGGIUNGI_SETTORE ="/aggiungi-settore";
 
+	public static final String ELIMINA_MANIFESTAZIONE ="/elimina-manifestazione";
+	public static final String ELIMINA_EVENTO="/elimina-evento";
+
+
 	//-------------------------------------------GENERAL------------------------------------------------------/
 	public static final String GENERAL_PATH = "/all";
 	public static final String REGISTRAZIONE = "/registrazioneCliente";
 	public static final String LOGIN = "/login";
 	public static final String EVENTI_FUTURI_CON_BIGLIETTI = "/trovaEventiFuturiConBiglietti";
 	public static final String FILTRA_EVENTI = "/filtraEventi";
+
 }

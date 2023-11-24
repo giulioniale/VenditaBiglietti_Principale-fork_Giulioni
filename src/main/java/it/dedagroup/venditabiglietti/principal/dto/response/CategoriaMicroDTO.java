@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatisticheManifestazioneDTOResponse {
-    private String nomeManifestazione;
-    private List<DatiEventiDTOResponse> profittoEventiDellaManifestazione;
+public class CategoriaMicroDTO {
+    private long id;
+    private String nome;
+    private boolean isCancellato;
+    private long version;
 }

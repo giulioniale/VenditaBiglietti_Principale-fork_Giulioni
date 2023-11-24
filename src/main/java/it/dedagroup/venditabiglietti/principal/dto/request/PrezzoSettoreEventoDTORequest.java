@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrezzoSettoreEventoDTORequest {
+    private long idPse;
     private long idSettore;
     private long idEvento;
     private double prezzo;
+    private boolean isCancellato;
 }

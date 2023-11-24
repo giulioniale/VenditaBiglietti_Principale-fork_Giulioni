@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -39,5 +40,11 @@ public class Manifestazione {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Utente utente;
 	@Version
+	
 	private long version;
+
+    public void addEvento(Evento e) {
+		if(eventi==null)eventi=new ArrayList<>();
+		eventi.add(e);
+    }
 }

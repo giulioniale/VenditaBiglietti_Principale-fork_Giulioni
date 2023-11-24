@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -48,6 +49,11 @@ public class Luogo {
 	@OneToMany(mappedBy = "luogo")
 	private List<Settore> settori;
 	@Version
+	
 	private long version;
 
+    public void addEventi(Evento e) {
+		if(eventi==null)eventi=new ArrayList<>();
+		eventi.add(e);
+    }
 }

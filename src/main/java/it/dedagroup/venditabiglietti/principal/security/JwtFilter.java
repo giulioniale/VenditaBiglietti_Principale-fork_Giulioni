@@ -1,6 +1,7 @@
 package it.dedagroup.venditabiglietti.principal.security;
 
 import it.dedagroup.venditabiglietti.principal.model.Utente;
+import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,16 +15,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter implements GeneralCallService {
 
-    @Autowired
-    GestoreToken gestoreToken;
+    private final String pathUtente="http://localhost:8092/utente";
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authCode = request.getHeader("Authorization");
         if(authCode != null && authCode.startsWith("Bearer ")){
             String token = authCode.substring(7);
-            Utente u = gestoreToken.getUtente(token);
+            Utente u = callPost(pathUtente+"/find/"+token,null,null,Utente.class);
             if(SecurityContextHolder.getContext().getAuthentication() == null){
                 UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(u, null, u.getAuthorities());
                 upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

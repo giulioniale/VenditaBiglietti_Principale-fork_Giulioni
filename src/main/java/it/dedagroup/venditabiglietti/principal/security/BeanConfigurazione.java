@@ -1,6 +1,8 @@
 package it.dedagroup.venditabiglietti.principal.security;
 
 import it.dedagroup.venditabiglietti.principal.repository.UtenteRepository;
+import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +20,20 @@ import org.springframework.web.server.ResponseStatusException;
 public class BeanConfigurazione {
 
     @Autowired
-    UtenteRepository uRepo;
 
+    UtenteServiceDef uService;
+
+    CallAuthorizationServer uRepo;
+
+
+    //TODO cambiata la repo adesso chiama il microservizio
     @Bean
     public UserDetailsService userDetailsService(){
-        return u -> uRepo.findByEmail(u)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun utente trovato."));
+
+       return u -> uService.findByEmail(u);
+
+       
+
     }
 
     @Bean
