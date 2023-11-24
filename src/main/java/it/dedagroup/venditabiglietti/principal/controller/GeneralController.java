@@ -54,9 +54,5 @@ public class GeneralController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).header("Authorization",gFac.login(request)).build();
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<List<Luogo>> tornaTuttiILuoghi(){
-        return ResponseEntity.status(HttpStatus.OK).body(gFac.trovaTuttiILuoghi());
-    }
 
 }

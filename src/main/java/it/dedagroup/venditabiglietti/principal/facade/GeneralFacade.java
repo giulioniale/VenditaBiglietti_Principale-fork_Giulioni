@@ -51,13 +51,13 @@ public class GeneralFacade implements GeneralCallService{
         for (EventoMicroDTO eventoDto :eventiFuturi) {
             MostraEventiFuturiDTOResponse response=new MostraEventiFuturiDTOResponse();
             List<PrezzoSettoreEvento> listaPsePerEvento =pseServ.findAllByIdEvento(eventoDto.getId());
-            List<SettoreMicroDTO> listaSettoriPerEvento=settServ.findAllByIdLuogo(lServ.findById(eventoDto.getIdLuogo()).getId());
+            List<SettoreMicroDTO> listaSettoriPerEvento=settServ.findAllByIdLuogo(lServ.findLuogoById(eventoDto.getIdLuogo()).getId());
             int capienzaSettore=0;
             int bigliettiVenduti=0;
             response=evMap.mostraEventiFuturiResponseBuilder(eventoDto,
-                    lServ.findById(eventoDto.getIdLuogo()),
+                    lServ.findLuogoById(eventoDto.getIdLuogo()),
                     mServ.findById(eventoDto.getIdManifestazione()));
-            capienzaSettore=listaSettoriPerEvento.stream().mapToInt(SettoreMicroDTO::getPosti).sum();
+            capienzaSettore=listaSettoriPerEvento.stream().mapToInt(SettoreMicroDTO::getCapienza).sum();
             bigliettiVenduti=listaPsePerEvento.stream().mapToInt(s->bServ.countByIdPrezzoSettoreEventoAndDataAcquistoIsNotNull(s.getId())).sum();
             response.setPostiDisponibili(capienzaSettore-bigliettiVenduti);
             listaEventiFuturiResponse.add(response);
@@ -65,12 +65,6 @@ public class GeneralFacade implements GeneralCallService{
         return listaEventiFuturiResponse;
 
     }
-    public List<Luogo> trovaTuttiILuoghi(){
-        List<Luogo> luoghi = lServ.trovaTuttiILuoghi();
-        return luoghi;
-    }
-
-
     public String login(LoginDTORequest request){
         return uServ.login(request);
     }
