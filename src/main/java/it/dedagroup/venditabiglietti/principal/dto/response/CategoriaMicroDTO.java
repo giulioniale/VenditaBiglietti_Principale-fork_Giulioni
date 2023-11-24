@@ -5,12 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class PrezzoSettoreEventoMicroDTO {
+@NoArgsConstructor
+public class CategoriaMicroDTO {
     private long id;
-    private long idSettore;
-    private long idEvento;
-    private double prezzo;
+    private String nome;
     private boolean isCancellato;
+    private long version;
 }

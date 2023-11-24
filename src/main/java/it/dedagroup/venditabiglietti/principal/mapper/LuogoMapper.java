@@ -2,7 +2,6 @@ package it.dedagroup.venditabiglietti.principal.mapper;
 
 import it.dedagroup.venditabiglietti.principal.dto.response.LuogoMicroDTO;
 import it.dedagroup.venditabiglietti.principal.dto.response.SettoreMicroDTO;
-import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Luogo;
 import it.dedagroup.venditabiglietti.principal.model.Settore;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,7 @@ public class LuogoMapper {
         Settore s=new Settore();
         s.setId(sDTO.getId());
         s.setNome(sDTO.getNome());
-        s.setCapienza(sDTO.getPosti());
+        s.setCapienza(sDTO.getCapienza());
         s.setCancellato(sDTO.isCancellato());
         s.setLuogo(l);
         s.setVersion(sDTO.getVersion());
