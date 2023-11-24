@@ -17,14 +17,14 @@ private String servicePath="http://localhost:8081/evento/";
 	
 	@Override
 	public void eliminaEvento(long id) {
-		callPost(servicePath+"delete/"+id, null, String.class);
-		
+		callPost(servicePath+"delete/"+id, id, String.class);
 	}
 @Override
     public List<EventoMicroDTO> trovaEventiFuturi() {
         String mioPath=servicePath+"trovaEventiFuturi";
         List<EventoMicroDTO> listaEventiFuturi =callGetForList(mioPath,null, EventoMicroDTO[].class);
         return listaEventiFuturi;
+        
     }
 
 }

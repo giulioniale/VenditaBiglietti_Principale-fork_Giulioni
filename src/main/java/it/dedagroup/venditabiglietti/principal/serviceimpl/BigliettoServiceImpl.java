@@ -14,7 +14,6 @@ import static it.dedagroup.venditabiglietti.principal.util.BigliettoUtilPath.*;
 
 @Service
 public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallService {
-
 	@Override
 	public BigliettoMicroDTO saveBiglietto(AddBigliettoDTORequest biglietto) {
 	    return callPost(INSERT_BIGLIETTO_PATH,biglietto,BigliettoMicroDTO.class);
