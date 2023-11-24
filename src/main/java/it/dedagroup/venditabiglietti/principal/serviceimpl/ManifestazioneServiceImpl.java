@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
+import it.dedagroup.venditabiglietti.principal.dto.response.ManifestazioneMicroDTO;
 import org.springframework.stereotype.Service;
 
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
@@ -16,6 +17,11 @@ public class ManifestazioneServiceImpl implements ManifestazioneServiceDef, Gene
 		
 	}
 
-	
-	
+	@Override
+	public ManifestazioneMicroDTO findById(long idManifestazione) {
+		String mioPath=pathManifestazione+"manifestazione/find/"+idManifestazione;
+		return callGet(mioPath,null,idManifestazione,ManifestazioneMicroDTO.class);
+	}
+
+
 }
