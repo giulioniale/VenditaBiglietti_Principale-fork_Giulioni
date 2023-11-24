@@ -6,6 +6,7 @@ import static it.dedagroup.venditabiglietti.principal.util.UtilPath.REGISTRAZION
 
 import java.util.List;
 
+import it.dedagroup.venditabiglietti.principal.dto.response.MostraEventiFuturiDTOResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,14 @@ import it.dedagroup.venditabiglietti.principal.dto.request.AggiungiUtenteDTORequ
 import it.dedagroup.venditabiglietti.principal.dto.request.LoginDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.EventoDTOResponse;
 import it.dedagroup.venditabiglietti.principal.facade.GeneralFacade;
+import it.dedagroup.venditabiglietti.principal.model.Luogo;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import static it.dedagroup.venditabiglietti.principal.util.UtilPath.*;
+
+import java.util.List;
+
 import static it.dedagroup.venditabiglietti.principal.util.UtilPath.*;
 
 @RestController
@@ -38,7 +44,7 @@ public class GeneralController {
     }
 
     @GetMapping(EVENTI_FUTURI_CON_BIGLIETTI)
-    public ResponseEntity<List<EventoDTOResponse>> eventiFutConBiglietti(){
+    public ResponseEntity<List<MostraEventiFuturiDTOResponse>> eventiFutConBiglietti(){
         return ResponseEntity.status(HttpStatus.OK).body(gFac.trovaEventiFuturiConBiglietti());
     }
 
@@ -47,5 +53,6 @@ public class GeneralController {
     public ResponseEntity<Void> login (@RequestBody LoginDTORequest request){
         return ResponseEntity.status(HttpStatus.ACCEPTED).header("Authorization",gFac.login(request)).build();
     }
+
 
 }
