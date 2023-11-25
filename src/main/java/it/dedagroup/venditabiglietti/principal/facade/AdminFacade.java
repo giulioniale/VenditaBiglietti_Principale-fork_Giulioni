@@ -11,6 +11,7 @@ import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.service.CategoriaServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.EventoServiceDef;
+import it.dedagroup.venditabiglietti.principal.service.LuogoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.ManifestazioneServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.SettoreServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
@@ -35,6 +36,9 @@ public class AdminFacade {
 	
 	@Autowired
 	EventoServiceDef eventoService;
+	
+	@Autowired
+	LuogoServiceDef luogoService;
 	
 	
 	
@@ -73,6 +77,10 @@ public class AdminFacade {
 	public void eliminaEvento(long id) {
 		eventoService.eliminaEvento(id);
 		
+	}
+	
+	public void eliminaLuogo(long id) {
+		luogoService.deleteLuogoById(id);
 	}
 
 }
