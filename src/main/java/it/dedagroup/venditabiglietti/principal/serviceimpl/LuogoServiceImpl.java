@@ -33,7 +33,7 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     @Transactional(rollbackOn = ResponseStatusException.class)
     @Override
     public void deleteLuogoById(long id) {
-        callPost(pathLuogo+"delete/"+id,null,Void.class);
+        callPost(pathLuogo+"delete/"+id,id,String.class);
     }
 
     @Override
