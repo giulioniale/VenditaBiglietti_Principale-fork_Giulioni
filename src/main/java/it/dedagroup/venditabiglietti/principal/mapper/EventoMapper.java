@@ -35,11 +35,10 @@ public class EventoMapper {
     }
 
     public List<Evento> toEventoList(List<EventoMicroDTO> eventiManifestazione, Manifestazione m, List<Luogo> luoghi, List<PrezzoSettoreEventoMicroDTO> prezziMicroDTO) {
-
         return eventiManifestazione.stream().map(evento -> toEvento(evento,
                                                                     m,
-                                                                    luoghi.stream().filter(l->l.getId()==evento.getIdLuogo()).findFirst().get()
-                                                                    ,prezziMicroDTO.stream().filter(p->p.getIdEvento()==evento.getId()).toList()
+                                                                    luoghi==null||luoghi.isEmpty()?null:luoghi.stream().filter(l->l.getId()==evento.getIdLuogo()).findFirst().get()
+                                                                    ,prezziMicroDTO==null || prezziMicroDTO.isEmpty()?null:prezziMicroDTO.stream().filter(p->p.getIdEvento()==evento.getId()).toList()
                                                                     )).toList();
     }
 
@@ -53,9 +52,9 @@ public class EventoMapper {
         e.setDescrizione(request.getDescrizione());
         e.setCancellato(request.isCancellato());
         e.setManifestazione(m);
-        m.addEvento(e);
-        e.setLuogo(l);
-        l.addEventi(e);
+        if(e!=null) m.addEvento(e);
+        if(l!=null)e.setLuogo(l);
+        if(e!=null)l.addEventi(e);
         List<PrezzoSettoreEvento> p=mapper.toList(pse,List.of(e),l.getSettori());
         e.setPrezziSettoreEvento(p);
         return e;

@@ -13,4 +13,7 @@ public interface EventoServiceDef {
 	void eliminaEvento(long id);
 
     public List<EventoMicroDTO> trovaEventiFuturi();
+    public List<EventoMicroDTO> findAllByManifestazioneId(long id_manifestazione);
+
+    public EventoMicroDTO findById(long idEvento);
 }
