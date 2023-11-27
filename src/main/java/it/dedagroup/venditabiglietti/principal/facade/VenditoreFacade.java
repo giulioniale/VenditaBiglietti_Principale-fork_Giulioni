@@ -98,8 +98,7 @@ public class VenditoreFacade implements GeneralCallService{
         List<SettoreMicroDTO> settoreMicroDTO = settoreServiceDef.findAllByListIdsLuogo(idLuoghi);
         if (settoreMicroDTO.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun luogo assegnato ai singoli settori");
         List<Long> idsEventi = eventiManifestazione.stream().map(EventoMicroDTO::getId).toList();
-        List<PrezzoSettoreEventoMicroDTO> psePerEventi = new ArrayList<>();
-        idsEventi.forEach(id -> psePerEventi.add(prezzoSettoreEventoServiceDef.findByIdEvento(id)));
+        List<PrezzoSettoreEventoMicroDTO> psePerEventi = prezzoSettoreEventoServiceDef.findByEventiIdsList(idsEventi);
         if (psePerEventi.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun evento assegnato ai singoli prezzoSettoreEvento");
         List<Luogo> luoghi = luogoMapper.toLuogoList(luoghiMicroDTO, settoreMicroDTO);
         List<Evento> eventi = eventoMapper.toEventoList(eventiManifestazione, manifestazione, luoghi, psePerEventi);
@@ -120,7 +119,7 @@ public class VenditoreFacade implements GeneralCallService{
     public DatiEventiDTOResponse statisticheBigliettiPerEvento(long id_evento, Utente u) {
         if (!u.getRuolo().equals(Ruolo.VENDITORE)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
         EventoMicroDTO eventoDTO = eventoServiceDef.findById(id_evento);
-        ManifestazioneMicroDTO manifestazioneDTO = callGet(MANIFESTAZIONE_PATH+"/find/id/"+eventoDTO.getIdManifestazione(),null, ManifestazioneMicroDTO.class);
+        ManifestazioneMicroDTO manifestazioneDTO = manifestazioneServiceDef.findById(eventoDTO.getIdManifestazione());
         if (manifestazioneDTO.getIdUtente() != u.getId()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore inserire un id evento corrispondente alla manifestazione: " + manifestazioneDTO.getNome());
         LuogoMicroDTO luogoDTO = luogoServiceDef.findLuogoById(eventoDTO.getId());
         List<SettoreMicroDTO> settoriDTO = settoreServiceDef.findAllByIdLuogo(luogoDTO.getId());
