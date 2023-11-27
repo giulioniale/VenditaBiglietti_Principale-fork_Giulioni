@@ -46,38 +46,43 @@ public class VenditoreFacade implements GeneralCallService{
         CategoriaMicroDTO c=categoriaServiceDef.findById(request.getIdCategoria());
         return manifestazioneMapper.fromMicroDTOtoManifestazioneDTOResponse(manifestazioneServiceDef.save(request), u);
     }
+    
     //TODO Modificare l'implementazione del filtro luoghi
-    public List<LuogoMicroDTO> findAllLuogo(){
-        return luogoServiceDef.findAll();
+    public List<LuogoMicroDTO> filtraLuoghiMap(Map<String, String> mapLuoghi, Utente u){
+        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
+    	if(mapLuoghi==null||mapLuoghi.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessun Parametro inserito");
+    	return luogoServiceDef.filtraLuoghiMap(mapLuoghi);
     }
 
     public EventoDTOResponse addEvento(AddEventoDTORequest request, Utente u) {
         if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
-        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+request.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        ManifestazioneMicroDTO m = manifestazioneServiceDef.findById(request.getIdManifestazione());
         if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
-        LuogoMicroDTO l = callGet(LUOGO_PATH+"findById/"+request.getIdLuogo(), null, LuogoMicroDTO.class);
-        return callPost(EVENTO_PATH+"salva",request,EventoDTOResponse.class);
+        LuogoMicroDTO l = luogoServiceDef.findLuogoById(request.getIdLuogo());
+        return eventoMapper.fromAddEventoDTORequestToEventoDTOResponse(request, u);
+        //  return callPost(EVENTO_PATH+"salva",request,EventoDTOResponse.class);
     }
 
-    public EventoDTOResponse deleteEvento(long idEvento, Utente u) {
+    public void deleteEvento(long idEvento, Utente u) {
         if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
-        EventoMicroDTO e = callGet(EVENTO_PATH+"findById"+idEvento, null, EventoMicroDTO.class);
-        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH+e.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        EventoMicroDTO e = eventoServiceDef.findById(idEvento);
+        ManifestazioneMicroDTO m = manifestazioneServiceDef.findById(e.getIdManifestazione());
         if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
-        return callPut(EVENTO_PATH+"delete",idEvento,EventoDTOResponse.class);
+        eventoServiceDef.deleteEvento(idEvento);
     }
 
 
    public VisualizzaEventoManifestazioneDTOResponse visualizzaEventiOrganizzati(long idManifestazione, Utente u) {
-       if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
-        ManifestazioneMicroDTO m = callGet(MANIFESTAZIONE_PATH + idManifestazione,null, ManifestazioneMicroDTO.class);
-       if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
-        List<EventoMicroDTO> listaEventi = callGetForList("/trovaEventiDiManifestazione" + m.getId(), null, EventoMicroDTO[].class);
+        if(u.getRuolo()!=Ruolo.VENDITORE) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente non è un venditore");
+        ManifestazioneMicroDTO m = manifestazioneServiceDef.findById(idManifestazione);
+        if (m.getIdUtente()!=u.getId())throw new ResponseStatusException(HttpStatus.FORBIDDEN, "L'utente che effettua la richiesta non e' l'organizzatore della manifestazione: "+m.getNome());
+        
+        List<EventoMicroDTO> listaEventi = eventoServiceDef.findAllByManifestazioneId(idManifestazione);
         VisualizzaEventoManifestazioneDTOResponse vemDTO = new VisualizzaEventoManifestazioneDTOResponse();
         Map<String, String> eventiManifestazione = new HashMap<>();
-        List<LuogoMicroDTO> listaLuoghi = listaEventi.stream().map(e -> callGet(LUOGO_PATH + "/findById/" + e.getIdLuogo(),  null, LuogoMicroDTO.class)).toList();
+        List<LuogoMicroDTO> listaLuoghi = listaEventi.stream().map(e -> luogoServiceDef.findLuogoById(idManifestazione)).toList();
         for (int i = 0; i < listaLuoghi.size(); i++) {
-        	eventiManifestazione.put(listaEventi.get(i).getDescrizione(), listaLuoghi.get(i).getRiga1());
+         	eventiManifestazione.put(listaEventi.get(i).getDescrizione(), listaLuoghi.get(i).getRiga1());
         }
         vemDTO.setNomeManifestazione(m.getNome());
         vemDTO.setNomeOrganizzatore(u.getNome());
@@ -169,4 +174,5 @@ public class VenditoreFacade implements GeneralCallService{
         PrezzoSettoreEventoMicroDTO pseDTOmodificato = prezzoSettoreEventoServiceDef.findPSEById(pseDTO.getId());
         return prezzoSettoreEventoMapper.toPseDTOResponse(pseDTOmodificato,eventoDTO.getDescrizione(),settoreDTO.getNome());
     }
+   
 }
