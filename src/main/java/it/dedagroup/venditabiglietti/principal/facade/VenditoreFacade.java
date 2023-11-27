@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,24 +22,22 @@ public class VenditoreFacade implements GeneralCallService{
     //TODO controllare su github i vari url dei microservizi
     //TODO discutere della creazione di un service layer dove utilizzare le chiamate ai microservizi
     private final LuogoServiceDef luogoServiceDef;
-    private final UtenteServiceDef utenteServiceDef;
     private final BigliettoServiceDef bigliettoServiceDef;
     private final ManifestazioneServiceDef manifestazioneServiceDef;
     private final CategoriaServiceDef categoriaServiceDef;
     private final EventoServiceDef eventoServiceDef;
+    private final SettoreServiceDef settoreServiceDef;
+    private final PrezzoSettoreEventoServiceDef prezzoSettoreEventoServiceDef;
+
     private final BigliettiMapper bigliettiMapper;
     private final ManifestazioneMapper manifestazioneMapper;
     private final EventoMapper eventoMapper;
     private final LuogoMapper luogoMapper;
     private final PrezzoSettoreEventoMapper prezzoSettoreEventoMapper;
     public final String EVENTO_PATH = "http://localhost:8081/evento";
-    public final String CATEGORIA_PATH = "http://localhost:8082/categoria";
-    public final String SETTORE_PATH = "http://localhost:8083/settore";
     public final String MANIFESTAZIONE_PATH = "http://localhost:8084/manifestazione";
-    public final String PREZZO_SETTORE_EVENTO_PATH = "http://localhost:8086/prezzoSettoreEvento";
 
     public final String LUOGO_PATH = "http://localhost:8088/biglietto";
-    /*
 
     public ManifestazioneDTOResponse addManifestazione(AddManifestazioneDTORequest request, Utente u){
         if (!u.getRuolo().equals(Ruolo.VENDITORE))throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
@@ -87,25 +86,26 @@ public class VenditoreFacade implements GeneralCallService{
     }
 
     public StatisticheManifestazioneDTOResponse statisticheBigliettiPerManifestazione(long id_manifestazione, Utente u) {
-        if (!u.getRuolo().equals(Ruolo.VENDITORE))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
-        ManifestazioneMicroDTO microDTO = callGet(MANIFESTAZIONE_PATH + "/find/id/" + id_manifestazione, null, ManifestazioneMicroDTO.class);
+        if (!u.getRuolo().equals(Ruolo.VENDITORE)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
+        ManifestazioneMicroDTO microDTO = manifestazioneServiceDef.findById(id_manifestazione);
         if (u.getId() != microDTO.getIdUtente()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore inserire una manifestazione organizzata da: "+u.getEmail());
         Manifestazione manifestazione = manifestazioneMapper.toManifestazione(microDTO, u);
-        List<EventoMicroDTO> eventiManifestazione = callGetForList(EVENTO_PATH + "/find/all/microDTO/id" + microDTO.getId(), null, EventoMicroDTO[].class);
+        List<EventoMicroDTO> eventiManifestazione = eventoServiceDef.findAllByManifestazioneId(microDTO.getId());
         if (eventiManifestazione.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun evento presente nella manifestazione: "+manifestazione.getNome());
         List<Long> idLuoghi = eventiManifestazione.stream().map(EventoMicroDTO::getIdLuogo).toList();
-        List<LuogoMicroDTO> luoghiMicroDTO = callPostForList(LUOGO_PATH+"/findAllByIds", idLuoghi, LuogoMicroDTO[].class);
+        List<LuogoMicroDTO> luoghiMicroDTO = luogoServiceDef.findAllByIds(idLuoghi);
         if (luoghiMicroDTO.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun luogo assegnato ai singoli eventi");
-        List<SettoreMicroDTO> settoreMicroDTO = callPostForList(SETTORE_PATH+"/findAllByListIdLuogo", idLuoghi, SettoreMicroDTO[].class);
+        List<SettoreMicroDTO> settoreMicroDTO = settoreServiceDef.findAllByListIdsLuogo(idLuoghi);
         if (settoreMicroDTO.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun luogo assegnato ai singoli settori");
         List<Long> idsEventi = eventiManifestazione.stream().map(EventoMicroDTO::getId).toList();
-        List<PrezzoSettoreEventoMicroDTO> psePerEventi = callPostForList(PREZZO_SETTORE_EVENTO_PATH+"/prezzi-settore-evento/ids-evento",idsEventi, PrezzoSettoreEventoMicroDTO[].class);
+        List<PrezzoSettoreEventoMicroDTO> psePerEventi = new ArrayList<>();
+        idsEventi.forEach(id -> psePerEventi.add(prezzoSettoreEventoServiceDef.findByIdEvento(id)));
         if (psePerEventi.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun evento assegnato ai singoli prezzoSettoreEvento");
         List<Luogo> luoghi = luogoMapper.toLuogoList(luoghiMicroDTO, settoreMicroDTO);
         List<Evento> eventi = eventoMapper.toEventoList(eventiManifestazione, manifestazione, luoghi, psePerEventi);
         List<Long> idsPrezzoSettoreEvento = psePerEventi.stream().map(PrezzoSettoreEventoMicroDTO::getId).toList();
         List<BigliettoMicroDTO> bigliettoMicroDTO = bigliettoServiceDef.findAllByIdPrezzoSettoreEventoIn(idsPrezzoSettoreEvento);
+
         bigliettiMapper.toBigliettoList(bigliettoMicroDTO, eventi, "");
         return calcolaStatistiche(manifestazione);
     }
@@ -118,16 +118,14 @@ public class VenditoreFacade implements GeneralCallService{
     }
 
     public DatiEventiDTOResponse statisticheBigliettiPerEvento(long id_evento, Utente u) {
-        if (!u.getRuolo().equals(Ruolo.VENDITORE))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
-        EventoMicroDTO eventoDTO = callGet(EVENTO_PATH+"/find/id/"+id_evento, null, EventoMicroDTO.class);
+        if (!u.getRuolo().equals(Ruolo.VENDITORE)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore l'utente non ha i permessi");
+        EventoMicroDTO eventoDTO = eventoServiceDef.findById(id_evento);
         ManifestazioneMicroDTO manifestazioneDTO = callGet(MANIFESTAZIONE_PATH+"/find/id/"+eventoDTO.getIdManifestazione(),null, ManifestazioneMicroDTO.class);
-        if (manifestazioneDTO.getIdUtente() != u.getId())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore inserire un id evento corrispondente alla manifestazione: " + manifestazioneDTO.getNome());
-        LuogoMicroDTO luogoDTO = callGet(LUOGO_PATH+"/findById/"+eventoDTO.getIdLuogo(), null, LuogoMicroDTO.class);
-        List<SettoreMicroDTO> settoriDTO = callGetForList(SETTORE_PATH+"/findByIdLuogo?idLuogo="+luogoDTO.getId(), null, SettoreMicroDTO[].class);
+        if (manifestazioneDTO.getIdUtente() != u.getId()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore inserire un id evento corrispondente alla manifestazione: " + manifestazioneDTO.getNome());
+        LuogoMicroDTO luogoDTO = luogoServiceDef.findLuogoById(eventoDTO.getId());
+        List<SettoreMicroDTO> settoriDTO = settoreServiceDef.findAllByIdLuogo(luogoDTO.getId());
         if (settoriDTO.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun settore trovato con id luogo: "+luogoDTO.getId());
-        List<PrezzoSettoreEventoMicroDTO> pseDTO = callGetForList(PREZZO_SETTORE_EVENTO_PATH+"/prezzi-settore-evento/ids-evento", List.of(eventoDTO.getId()), PrezzoSettoreEventoMicroDTO[].class);
+        List<PrezzoSettoreEventoMicroDTO> pseDTO = prezzoSettoreEventoServiceDef.findAllPSEByIdEvento(eventoDTO.getId());
         if (pseDTO.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nessun prezzo settore eventi trovato tramite id evento: "+eventoDTO.getId());
         Luogo luogo = luogoMapper.toLuogo(luogoDTO, settoriDTO);
         Manifestazione manifestazione = manifestazioneMapper.toManifestazione(manifestazioneDTO, u);
@@ -145,7 +143,10 @@ public class VenditoreFacade implements GeneralCallService{
 
     private SettoriPerSingoloLuogo calcolaSettoreSingoloLuogo(PrezzoSettoreEvento pse) {
         SettoriPerSingoloLuogo s = new SettoriPerSingoloLuogo();
-        s.setBigliettiTotali(pse.getSettore().getCapienza());
+        if (pse==null)pse = new PrezzoSettoreEvento();
+        if (pse.getSettore()==null) pse.setSettore(new Settore());
+        int bigliettiDisponibili = pse.getSettore().getCapienza() - pse.getBiglietti().size();
+        s.setBigliettiTotali(bigliettiDisponibili);
         s.setSettore(pse.getSettore().getNome());
         s.setPrezzoAttuale(pse.getPrezzo());
         s.setBigliettiComprati(pse.getBiglietti().size());
@@ -153,22 +154,19 @@ public class VenditoreFacade implements GeneralCallService{
         return s;
     }
 
-    public PseDTOResponse setPrezzoSettoreEvento(PrezzoSettoreEventoDTORequest request, Utente utente) {
+    public PseDTOResponse setPrezzoSettoreEvento(ModifyPSEDTORequest request, Utente utente) {
         if (!utente.getRuolo().equals(Ruolo.VENDITORE)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore, l'utente non ha i permessi");
-        EventoMicroDTO eventoDTO = callPost(EVENTO_PATH+"/find/id" + request.getIdEvento(), null, EventoMicroDTO.class);
-        ManifestazioneMicroDTO manifestazioneDTO = callPost(MANIFESTAZIONE_PATH+"/find/id"+eventoDTO.getIdManifestazione(), null, ManifestazioneMicroDTO.class);
+        EventoMicroDTO eventoDTO = eventoServiceDef.findById(request.getIdEvento());
+        ManifestazioneMicroDTO manifestazioneDTO = manifestazioneServiceDef.findById(eventoDTO.getIdManifestazione());
         if (manifestazioneDTO.getIdUtente() != utente.getId()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Errore annullata la modifica del prezzo settore evento");
-        SettoreMicroDTO settoreDTO = callGet(SETTORE_PATH + "/find/id" + request.getIdSettore(),null, SettoreMicroDTO.class);
-        PrezzoSettoreEventoMicroDTO pseDTO = callPost(PREZZO_SETTORE_EVENTO_PATH + "/find/id" + request.getIdPse(), null, PrezzoSettoreEventoMicroDTO.class);
+        SettoreMicroDTO settoreDTO = settoreServiceDef.findById(request.getIdSettore());
+        PrezzoSettoreEventoMicroDTO pseDTO = prezzoSettoreEventoServiceDef.findPSEById(request.getIdPse());
 
-        callPost(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-evento?idPse="+ pseDTO.getId() + "&idEvento="+ eventoDTO.getId(),null,Void.class);
-        callPost(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-settore?idPse=" + pseDTO.getId() + "&idSettore=" + settoreDTO.getId(), null, Void.class);
-        callGet(PREZZO_SETTORE_EVENTO_PATH + "/prezzi-settore-evento/modifica-prezzo",  request, SettoreMicroDTO.class);
+        prezzoSettoreEventoServiceDef.modificaEvento(pseDTO.getId(),eventoDTO.getId());
+        prezzoSettoreEventoServiceDef.modificaSettore(pseDTO.getId(),settoreDTO.getId());
+        prezzoSettoreEventoServiceDef.modificaPrezzo(settoreDTO.getId(),eventoDTO.getId(),request.getPrezzo());
 
-        PrezzoSettoreEventoMicroDTO pseDTOmodificato = callPost(PREZZO_SETTORE_EVENTO_PATH+"/find/id"+pseDTO.getId(),null, PrezzoSettoreEventoMicroDTO.class);
+        PrezzoSettoreEventoMicroDTO pseDTOmodificato = prezzoSettoreEventoServiceDef.findPSEById(pseDTO.getId());
         return prezzoSettoreEventoMapper.toPseDTOResponse(pseDTOmodificato,eventoDTO.getDescrizione(),settoreDTO.getNome());
     }
-
-     */
 }
-

@@ -29,4 +29,14 @@ private String servicePath="http://localhost:8081/evento/";
         
     }
 
+    @Override
+    public List<EventoMicroDTO> findAllByManifestazioneId(long id_manifestazione) {
+        return callGetForList(servicePath + "/trovaEventiDiManifestazione/" + id_manifestazione, null, EventoMicroDTO[].class);
+    }
+
+    @Override
+    public EventoMicroDTO findById(long idEvento) {
+        return callGet(servicePath+"/id/"+idEvento,idEvento,EventoMicroDTO.class);
+    }
+
 }

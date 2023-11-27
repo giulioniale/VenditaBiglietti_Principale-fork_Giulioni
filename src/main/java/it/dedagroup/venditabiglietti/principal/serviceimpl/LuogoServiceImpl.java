@@ -43,7 +43,7 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
 
     @Override
     public List<LuogoMicroDTO> findAllByIds(List<Long> ids) {
-        return callGetForList(pathLuogo+"find/allByIds", ids, LuogoMicroDTO[].class);
+        return callPostForList(pathLuogo+"find/allByIds", ids, LuogoMicroDTO[].class);
     }
 
     @Override

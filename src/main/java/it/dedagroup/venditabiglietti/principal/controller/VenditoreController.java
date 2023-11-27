@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.dedagroup.venditabiglietti.principal.dto.request.AddManifestazioneDTORequest;
-import it.dedagroup.venditabiglietti.principal.dto.request.PrezzoSettoreEventoDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.request.ModifyPSEDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.facade.VenditoreFacade;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
@@ -156,10 +156,7 @@ public class VenditoreController {
 			@ApiResponse(responseCode = "404", description = "Il prezzo settore evento non e' stato trovato tramite l'id prezzo-settore-evento inserito in input", content = {@Content(mediaType = MediaType.ALL_VALUE)})
 	})
 	@PostMapping("/set/prezzo-settore-evento")
-	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid PrezzoSettoreEventoDTORequest request, UsernamePasswordAuthenticationToken upat) {
+	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid ModifyPSEDTORequest request, UsernamePasswordAuthenticationToken upat) {
 		return ResponseEntity.ok(vendFac.setPrezzoSettoreEvento(request, ((Utente)upat.getPrincipal())));
 	}
-
-	 */
-
 }

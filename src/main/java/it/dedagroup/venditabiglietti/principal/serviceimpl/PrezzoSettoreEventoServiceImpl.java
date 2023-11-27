@@ -1,5 +1,8 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.ModifyPSEDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.request.PrezzoSettoreEventoDtoRequest;
+import it.dedagroup.venditabiglietti.principal.dto.response.PrezzoSettoreEventoMicroDTO;
 import it.dedagroup.venditabiglietti.principal.model.PrezzoSettoreEvento;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.PrezzoSettoreEventoServiceDef;
@@ -18,9 +21,21 @@ public class PrezzoSettoreEventoServiceImpl implements PrezzoSettoreEventoServic
     }
 
     @Override
+    public PrezzoSettoreEventoMicroDTO findPSEById(Long idPrezzoSettoreEvento) {
+        String mioPath=path+idPrezzoSettoreEvento;
+        return callGet(mioPath,idPrezzoSettoreEvento,PrezzoSettoreEventoMicroDTO.class);
+    }
+
+    @Override
     public List<PrezzoSettoreEvento> findByEventiIds(List<Long> ids) {
         String mioPath = path+"ids-evento";
         return callGetForList(mioPath, ids, PrezzoSettoreEvento[].class);
+    }
+
+    @Override
+    public PrezzoSettoreEventoMicroDTO findByIdEvento(long idEvento) {
+        String mioPath = path+"id-evento/"+idEvento;
+        return callPost(mioPath, idEvento, PrezzoSettoreEventoMicroDTO.class);
     }
 
     @Override
@@ -30,5 +45,22 @@ public class PrezzoSettoreEventoServiceImpl implements PrezzoSettoreEventoServic
 
     }
 
-
+    @Override
+    public List<PrezzoSettoreEventoMicroDTO> findAllPSEByIdEvento(long idEvento) {
+        String mioPath=path+"lista-by-evento?idEvento="+idEvento;
+        return callGetForList(mioPath,idEvento,PrezzoSettoreEventoMicroDTO[].class);
+    }
+    @Override
+    public void modificaEvento(long idPrezzoSettoreEvento, long idEvento){
+        callPost(path + "modifica-evento?idPse="+idPrezzoSettoreEvento+"&idEvento="+idEvento,null,Void.class);
+    }
+    @Override
+    public void modificaSettore(long idPrezzoSettoreEvento, long idSettore){
+        callPost(path + "modifica-settore?idPse=" + idPrezzoSettoreEvento + "&idSettore=" + idSettore, null, Void.class);
+    }
+    @Override
+    public void modificaPrezzo(long idSettore, long idEvento, double prezzo){
+        PrezzoSettoreEventoDtoRequest request = new PrezzoSettoreEventoDtoRequest(idSettore,idEvento,prezzo);
+        callPost(path + "modifica-prezzo",  request, Void.class);
+    }
 }
