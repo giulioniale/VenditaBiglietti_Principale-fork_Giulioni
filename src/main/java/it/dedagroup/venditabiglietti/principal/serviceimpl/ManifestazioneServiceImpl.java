@@ -20,7 +20,7 @@ public class ManifestazioneServiceImpl implements ManifestazioneServiceDef, Gene
 
 	@Override
 	public ManifestazioneMicroDTO findById(long idManifestazione) {
-		String mioPath=pathManifestazione+"manifestazione/find/"+idManifestazione;
+		String mioPath=pathManifestazione+"manifestazione/find-id/"+idManifestazione;
 		return callGet(mioPath,idManifestazione,ManifestazioneMicroDTO.class);
 	}
 

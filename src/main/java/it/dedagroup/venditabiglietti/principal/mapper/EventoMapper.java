@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.mapper;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Luogo;
@@ -29,21 +30,41 @@ public class EventoMapper {
         evDTOResp.setIdManifestazione(ev.getManifestazione().getId());
         return evDTOResp;
     }
+    
+    public EventoDTOResponse fromAddEventoDTORequestToEventoDTOResponse(AddEventoDTORequest request, Utente u) {
+    	EventoDTOResponse eventoDTO = new EventoDTOResponse();
+    	eventoDTO.setData(request.getData());
+    	eventoDTO.setOra(request.getOra());
+    	eventoDTO.setDescrizione(request.getDescrizione());
+    	eventoDTO.setIdManifestazione(request.getIdManifestazione());
+    	eventoDTO.setIdLuogo(request.getIdLuogo());
+    	return eventoDTO;
+    }
+    
+    public EventoDTOResponse fromMicroDTOtoEventoDTOResponse(EventoMicroDTO request) {
+    	EventoDTOResponse eventoDTO = new EventoDTOResponse();
+    	eventoDTO.setId(request.getId());
+    	eventoDTO.setData(request.getData());
+    	eventoDTO.setOra(request.getOra());
+    	eventoDTO.setDescrizione(request.getDescrizione());
+    	eventoDTO.setIdManifestazione(request.getIdManifestazione());
+    	eventoDTO.setIdLuogo(request.getIdLuogo());
+    	return eventoDTO;
+    }
 
     public List<EventoDTOResponse> toEventoDTOResponseList(List<Evento> eventi){
         return eventi.stream().map(this::toEventoDTOResponse).toList();
     }
 
     public List<Evento> toEventoList(List<EventoMicroDTO> eventiManifestazione, Manifestazione m, List<Luogo> luoghi, List<PrezzoSettoreEventoMicroDTO> prezziMicroDTO) {
-
         return eventiManifestazione.stream().map(evento -> toEvento(evento,
                                                                     m,
-                                                                    luoghi.stream().filter(l->l.getId()==evento.getIdLuogo()).findFirst().get()
-                                                                    ,prezziMicroDTO.stream().filter(p->p.getIdEvento()==evento.getId()).toList()
+                                                                    luoghi==null||luoghi.isEmpty()?null:luoghi.stream().filter(l->l.getId()==evento.getIdLuogo()).findFirst().get()
+                                                                    ,prezziMicroDTO==null || prezziMicroDTO.isEmpty()?null:prezziMicroDTO.stream().filter(p->p.getIdEvento()==evento.getId()).toList()
                                                                     )).toList();
     }
 
-
+    
 
     public Evento toEvento(EventoMicroDTO request, Manifestazione m, Luogo l, List<PrezzoSettoreEventoMicroDTO> pse){
         Evento e=new Evento();
@@ -53,9 +74,9 @@ public class EventoMapper {
         e.setDescrizione(request.getDescrizione());
         e.setCancellato(request.isCancellato());
         e.setManifestazione(m);
-        m.addEvento(e);
-        e.setLuogo(l);
-        l.addEventi(e);
+        if(e!=null) m.addEvento(e);
+        if(l!=null)e.setLuogo(l);
+        if(e!=null)l.addEventi(e);
         List<PrezzoSettoreEvento> p=mapper.toList(pse,List.of(e),l.getSettori());
         e.setPrezziSettoreEvento(p);
         return e;

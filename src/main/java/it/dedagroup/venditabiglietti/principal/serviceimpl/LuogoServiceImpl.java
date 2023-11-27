@@ -43,7 +43,7 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
 
     @Override
     public List<LuogoMicroDTO> findAllByIds(List<Long> ids) {
-        return callGetForList(pathLuogo+"find/allByIds", ids, LuogoMicroDTO[].class);
+        return callPostForList(pathLuogo+"find/allByIds", ids, LuogoMicroDTO[].class);
     }
 
     @Override
@@ -95,6 +95,10 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     public List<LuogoMicroDTO> findAllLuogoByNazionalitaAndComune(String nazionalita, String comune) {
         return callGetForList(pathLuogo+"find/all/nazionalita&comune/"+nazionalita+"/"+comune,null,LuogoMicroDTO[].class);
     }
+	@Override
+	public List<LuogoMicroDTO> filtraLuoghiMap(Map<String, String> mapLuogo) {
+		return callGetForList(pathLuogo, mapLuogo, LuogoMicroDTO[].class);
+	}
 
 
 }

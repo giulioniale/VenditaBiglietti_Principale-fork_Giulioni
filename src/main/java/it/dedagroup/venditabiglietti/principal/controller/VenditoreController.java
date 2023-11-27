@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.dedagroup.venditabiglietti.principal.dto.request.AddManifestazioneDTORequest;
-import it.dedagroup.venditabiglietti.principal.dto.request.PrezzoSettoreEventoDTORequest;
+import it.dedagroup.venditabiglietti.principal.dto.request.ModifyPSEDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.facade.VenditoreFacade;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Endpoint microservizio Evento, Luogo ,Biglietto", description = "Questo controller gestisce i microservizi elencati ed interagisce su più tabelle")
 @RestController
@@ -49,16 +50,18 @@ public class VenditoreController {
 	public ResponseEntity<ManifestazioneDTOResponse> addManifestazione(AddManifestazioneDTORequest request, UsernamePasswordAuthenticationToken upat){
 		return ResponseEntity.ok(vendFac.addManifestazione(request, ((Utente)upat.getPrincipal())));
 	}
-	//TODO Modificare l'implementazione del filtro luoghi
-	@Operation(summary = "Metodo per trovare tutti i luoghi filtrati",description = "Questo EndPoint ci permette di trovare tutti i luoghi filtrati tramite una mappa di parametri")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Viene restituita una lista di luoghi filtrati", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ManifestazioneDTOResponse.class))),
-			@ApiResponse(responseCode = "404", description = "Viene lanciata un'eccezione quando la lista dei luoghi filtrati e' vuota", content = @Content(mediaType = MediaType.ALL_VALUE))
-	})
-	@PostMapping("/find/all/luogo")
-	public ResponseEntity<List<LuogoMicroDTO>> findAllLuogo(){
-		return ResponseEntity.ok(vendFac.findAllLuogo());
-	}
+	
+//	//TODO Modificare l'implementazione del filtro luoghi
+//	@Operation(summary = "Metodo per trovare tutti i luoghi filtrati",description = "Questo EndPoint ci permette di trovare tutti i luoghi filtrati tramite una mappa di parametri")
+//	@ApiResponses(value = {
+//			@ApiResponse(responseCode = "200", description = "Viene restituita una lista di luoghi filtrati", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ManifestazioneDTOResponse.class))),
+//			@ApiResponse(responseCode = "404", description = "Viene lanciata un'eccezione quando la lista dei luoghi filtrati e' vuota", content = @Content(mediaType = MediaType.ALL_VALUE))
+//	})
+//	@PostMapping("/find/all/luogo")
+//	public ResponseEntity<List<LuogoMicroDTO>> findAllLuogo(){
+//		return ResponseEntity.ok(vendFac.findAllLuogo());
+//	}
+	
 	@Operation(summary = "Endpoint che permette di aggiungere un evento solo se l'utente è un venditore e se la manifestazione e luogo sono già presenti",
 				description = "questo metodo prende in input un evento e lo aggiunge nel DB, solo dopo il verificamento del ruolo Utente(venditore) tramite upat e dopo aver verificato che "
 						+ "Manifestazione e Luogo siano già esistenti")
@@ -88,8 +91,9 @@ public class VenditoreController {
 				content = @Content(mediaType = MediaType.ALL_VALUE))
 	})
 	@PutMapping("/evento/delete/{id}")
-	public ResponseEntity<EventoDTOResponse> deleteEvento(@PathVariable("id") long idManifestazione, UsernamePasswordAuthenticationToken upat){
-		return ResponseEntity.ok(vendFac.deleteEvento(idManifestazione, ((Utente)upat.getPrincipal())));
+	public ResponseEntity<Void> deleteEvento(@PathVariable("id") long idManifestazione, UsernamePasswordAuthenticationToken upat){
+		vendFac.deleteEvento(idManifestazione, ((Utente)upat.getPrincipal()));
+		return ResponseEntity.ok().build();
 	}
 	
 	
@@ -156,10 +160,19 @@ public class VenditoreController {
 			@ApiResponse(responseCode = "404", description = "Il prezzo settore evento non e' stato trovato tramite l'id prezzo-settore-evento inserito in input", content = {@Content(mediaType = MediaType.ALL_VALUE)})
 	})
 	@PostMapping("/set/prezzo-settore-evento")
-	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid PrezzoSettoreEventoDTORequest request, UsernamePasswordAuthenticationToken upat) {
+	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid ModifyPSEDTORequest request, UsernamePasswordAuthenticationToken upat) {
 		return ResponseEntity.ok(vendFac.setPrezzoSettoreEvento(request, ((Utente)upat.getPrincipal())));
 	}
-
 	
-
+	@Operation(summary = "metodo per cerlare una lista di luoghi inserendo per ogni attributo una chiave valore(String) e un valore(String)",
+			description = "in questo metodo inserendo attributo di luogo (utilizzando un Map) una chiave ed un valore entrambe String, ci ritornerà una Lista di Luoghi da noi selezionati, solo se l'utente sia un venditore")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Lista Luoghi trovata tramite attributi ineriti", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LuogoMicroDTO[].class))),
+			@ApiResponse(responseCode = "400", description = "L'utente non è un venditore", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+	})
+	@GetMapping("/filtra/luoghi/map")
+	public ResponseEntity<List<LuogoMicroDTO>> filtraLuoghiMap(Map<String, String> map, UsernamePasswordAuthenticationToken upat){
+		return ResponseEntity.ok(vendFac.filtraLuoghiMap(map, (Utente)upat.getPrincipal()));
+	}
+	
 }
