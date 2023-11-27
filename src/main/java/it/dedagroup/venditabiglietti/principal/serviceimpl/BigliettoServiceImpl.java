@@ -14,6 +14,7 @@ import static it.dedagroup.venditabiglietti.principal.util.BigliettoUtilPath.*;
 
 @Service
 public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallService {
+
     @Override
     public BigliettoMicroDTO saveBiglietto(AddBigliettoDTORequest biglietto) {
         return callPost(INSERT_BIGLIETTO_PATH,biglietto,BigliettoMicroDTO.class);
@@ -83,4 +84,5 @@ public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallSer
     public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoIn(List<Long> idsPrezzoSettoreEvento) {
         return callPostForList(FIND_ALL_BY_ID_PREZZO_SETTORE_EVENTO_IN_IDS,idsPrezzoSettoreEvento,BigliettoMicroDTO[].class);
     }
+
 }

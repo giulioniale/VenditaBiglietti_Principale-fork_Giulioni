@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddEventoRequest {
-	private String username;
+public class AddEventoDTORequest {
+	
 	private LocalDate data;
 	private LocalTime ora;
 	private String descrizione;

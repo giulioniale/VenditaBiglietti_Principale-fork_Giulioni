@@ -14,6 +14,5 @@ public class ManifestazioneDTOResponse {
     private long id;
     private String nome;
     private long idCategoria;
-    private List<Long> idEventi;
     private long idUtente;
 }

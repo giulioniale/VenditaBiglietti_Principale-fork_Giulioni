@@ -6,55 +6,115 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.dedagroup.venditabiglietti.principal.dto.request.AddManifestazioneDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.PrezzoSettoreEventoDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.facade.VenditoreFacade;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.parameters.P;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoRequest;
-@Tag(name = "", description = "")
+import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
+
+import java.util.List;
+
+@Tag(name = "Endpoint microservizio Evento, Luogo ,Biglietto", description = "Questo controller gestisce i microservizi elencati ed interagisce su più tabelle")
 @RestController
 @RequestMapping("/venditore")
+@Validated
 public class VenditoreController {
 
 	@Autowired
 	VenditoreFacade vendFac;
-	/*
 
+	@Operation(summary = "Metodo per aggiungere una manifestazione",description = "Questo EndPoint permette al venditore di aggiungere una manifestazione")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "La manifestazione e' stata inserita con successo nel sistema", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ManifestazioneDTOResponse.class))),
+			@ApiResponse(responseCode = "403", description = "L'utente non ha i permessi per inserire la manifestazione", content = @Content(mediaType = MediaType.ALL_VALUE)),
+			@ApiResponse(responseCode = "400", description = "La manifestazione inserita e' gia' esistente", content = @Content(mediaType = MediaType.ALL_VALUE)),
+			@ApiResponse(responseCode = "400", description = "La categoria non e' stata trovata con l'id inserito", content = @Content(mediaType = MediaType.ALL_VALUE))
+	})
+	@PostMapping("/manifestazione/add")
+	public ResponseEntity<ManifestazioneDTOResponse> addManifestazione(AddManifestazioneDTORequest request, UsernamePasswordAuthenticationToken upat){
+		return ResponseEntity.ok(vendFac.addManifestazione(request, ((Utente)upat.getPrincipal())));
+	}
+	//TODO Modificare l'implementazione del filtro luoghi
+	@Operation(summary = "Metodo per trovare tutti i luoghi filtrati",description = "Questo EndPoint ci permette di trovare tutti i luoghi filtrati tramite una mappa di parametri")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Viene restituita una lista di luoghi filtrati", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ManifestazioneDTOResponse.class))),
+			@ApiResponse(responseCode = "404", description = "Viene lanciata un'eccezione quando la lista dei luoghi filtrati e' vuota", content = @Content(mediaType = MediaType.ALL_VALUE))
+	})
+	@PostMapping("/find/all/luogo")
+	public ResponseEntity<List<LuogoMicroDTO>> findAllLuogo(){
+		return ResponseEntity.ok(vendFac.findAllLuogo());
+	}
+	@Operation(summary = "Endpoint che permette di aggiungere un evento solo se l'utente è un venditore e se la manifestazione e luogo sono già presenti",
+				description = "questo metodo prende in input un evento e lo aggiunge nel DB, solo dopo il verificamento del ruolo Utente(venditore) tramite upat e dopo aver verificato che "
+						+ "Manifestazione e Luogo siano già esistenti")
+	@ApiResponses({
+		@ApiResponse(responseCode = "ACCEPTED(202)",
+				description = "Evento aggiunto correttamente",
+				content = @Content(mediaType = MediaType.ALL_VALUE)
+	),
+		@ApiResponse(responseCode = "NOTFOUND(404)",
+				description = "Impossibile aggiungere Evento",
+				content = @Content(mediaType = MediaType.ALL_VALUE))
+	})
 	@PostMapping("/evento/add")
-	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoRequest eventoRequest){
-		//TODO L'aggiunta dell'evento si basa su una manifestazione già presente
-		//TODO Inserire l'upat per riprendere l'email
-		//TODO aggiungere il controllo tramite email per capire se l'aggiunta della manifestazione venga da un venditore
-		return ResponseEntity.ok(vendFac.addEvento(eventoRequest));
+	public ResponseEntity<EventoDTOResponse> addEvento(@RequestBody AddEventoDTORequest eventoRequest, UsernamePasswordAuthenticationToken upat){
+		return ResponseEntity.ok(vendFac.addEvento(eventoRequest, ((Utente)upat.getPrincipal())));
 	}
-
-	@PostMapping("/evento/delete/{id}")
-	public ResponseEntity<EventoDTOResponse> deleteEvento(@PathVariable("id") long idManifestazione){
-		//TODO Inserire l'upat per riprendere l'email
-		//TODO aggiungere il controllo tramite email per capire se l'aggiunta della manifestazione venga da un venditore
-		return ResponseEntity.ok(vendFac.deleteEvento(idManifestazione));
+	
+	@Operation(summary = "Endpoint che permette di modificare un evento solo se l'utente è un venditore e se esiste un idManifestazione",
+			description = "Questo metodo ci permette di settare la booleana(isCancellato) a true, solo dopo il verificamento del ruolo Utente(venditore) tramite upat e che l'idManifestazione inserito sia già presente")
+	@ApiResponses({
+		@ApiResponse(responseCode = "ACCEPTED(202)",
+				description = "Evento modificato correttamente",
+				content = @Content(mediaType = MediaType.ALL_VALUE)
+	),
+		@ApiResponse(responseCode = "NOTFOUND(404)",
+				description = "Impossibile modificare Evento",
+				content = @Content(mediaType = MediaType.ALL_VALUE))
+	})
+	@PutMapping("/evento/delete/{id}")
+	public ResponseEntity<EventoDTOResponse> deleteEvento(@PathVariable("id") long idManifestazione, UsernamePasswordAuthenticationToken upat){
+		return ResponseEntity.ok(vendFac.deleteEvento(idManifestazione, ((Utente)upat.getPrincipal())));
 	}
-
-	@GetMapping("/evento/visualizza/{idManifestazione}")
-	public ResponseEntity<VisualizzaEventoManifestazioneDTOResponse> visualizzaEventiOrganizzati(@PathVariable long idManifestazione){
-		//TODO L'aggiunta dell'evento si basa su una manifestazione già presente
-		//TODO Inserire l'upat per riprendere l'email
-		return ResponseEntity.ok(vendFac.visualizzaEventiOrganizzati(idManifestazione));
+	
+	
+	
+	@Operation(summary = "Endpoint che permette di visualizzare un evento solo se l'utente è un venditore e se esiste un idManifestazione",
+			description = "Questo metodo ci permette di visualizzare una manifestazione(che puo avere diversi eventi) tramite idManifestazione e solo dopo aver verificato che l'Utente sia un Venditore")
+	@ApiResponses({
+		@ApiResponse(responseCode = "ACCEPTED(202)",
+				description = "Manifestazione Trovata",
+				content = @Content(mediaType = MediaType.ALL_VALUE)
+	),
+		@ApiResponse(responseCode = "NOTFOUND(404)",
+				description = "Impossibile trovare Manifestazione",
+				content = @Content(mediaType = MediaType.ALL_VALUE))
+	})
+	@GetMapping("/evento/visualizza/{idManifestazione}") //una manifestazione può avere diversi eventi
+	public ResponseEntity<VisualizzaEventoManifestazioneDTOResponse> visualizzaEventiOrganizzati(@PathVariable long idManifestazione, UsernamePasswordAuthenticationToken upat){
+		return ResponseEntity.ok(vendFac.visualizzaEventiOrganizzati(idManifestazione, ((Utente)upat.getPrincipal())));
 	}
+	
+	
+	
+	
+	
+	
 	@Operation(summary = "Metodo per controllare le statistiche dei biglietti di una manifestazione", description = "Questo EndPoint ci restituisce le statistiche dei biglietti di una manifestazione appartenente all'utente venditore che effettua la richiesta")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Viene restituita una response con dentro la manifestazione i vari eventi nei rispettivi luoghi con le varie vendite dei biglietti effettuati per i singoli settori", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = StatisticheManifestazioneDTOResponse.class))}),

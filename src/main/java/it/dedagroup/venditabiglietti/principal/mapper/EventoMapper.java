@@ -27,8 +27,6 @@ public class EventoMapper {
         evDTOResp.setDescrizione(ev.getDescrizione());
         evDTOResp.setIdLuogo(ev.getLuogo().getId());
         evDTOResp.setIdManifestazione(ev.getManifestazione().getId());
-        List<Long> listaIdPrezzoSettoreEvento = ev.getPrezziSettoreEvento().stream().map(PrezzoSettoreEvento::getId).toList();
-        evDTOResp.setIdPrezzoSettoreEvento(listaIdPrezzoSettoreEvento);
         return evDTOResp;
     }
 

@@ -33,6 +33,7 @@ public class GeneralFacade implements GeneralCallService{
     LuogoServiceDef lServ;
     @Autowired
     EventoMapper evMap;
+
     @Autowired
     UtenteMapper uMap;
     @Autowired
@@ -51,6 +52,7 @@ public class GeneralFacade implements GeneralCallService{
         Utente uNew =uMap.toUtenteCliente(req);
         uServ.aggiungiUtente(uNew);
     }
+
     // TODO valutare sui cicli nestati se fare le lambda
     public List<MostraEventiFuturiDTOResponse> trovaEventiFuturiConBiglietti(){
         List<EventoMicroDTO> eventiFuturi = eServ.trovaEventiFuturi();

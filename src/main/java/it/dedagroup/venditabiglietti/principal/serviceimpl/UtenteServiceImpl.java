@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import it.dedagroup.venditabiglietti.principal.model.Ruolo;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.repository.UtenteRepository;
-import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
 import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import jakarta.transaction.Transactional;
 
@@ -100,7 +99,6 @@ public class UtenteServiceImpl implements UtenteServiceDef, GeneralCallService {
 	public String login(LoginDTORequest request){
 		return callPost(pathUtente + "/login", request, String.class);
 	}
-
 	public List<Utente> findByAllId(List<Long>ids){
 		Utente [] utenti = callPost(pathUtente + "/trovaPerListaIds", ids, Utente[].class);
 		return List.of(utenti);

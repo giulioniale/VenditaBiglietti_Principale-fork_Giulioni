@@ -33,7 +33,7 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     @Transactional(rollbackOn = ResponseStatusException.class)
     @Override
     public void deleteLuogoById(long id) {
-        callPost(pathLuogo+"delete/"+id,null,Void.class);
+        callPost(pathLuogo+"delete/"+id,id,String.class);
     }
 
     @Override
@@ -95,4 +95,6 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     public List<LuogoMicroDTO> findAllLuogoByNazionalitaAndComune(String nazionalita, String comune) {
         return callGetForList(pathLuogo+"find/all/nazionalita&comune/"+nazionalita+"/"+comune,null,LuogoMicroDTO[].class);
     }
+
+
 }

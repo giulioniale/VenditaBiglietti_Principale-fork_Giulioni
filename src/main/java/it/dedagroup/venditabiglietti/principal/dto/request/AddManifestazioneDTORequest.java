@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class AddManifestazioneDTORequest {
     private String nome;
     private long idCategoria;
-    private long idUtente;
 }

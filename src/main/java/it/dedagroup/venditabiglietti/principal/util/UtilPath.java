@@ -16,7 +16,7 @@ public class UtilPath {
 	public static final String AGGIUNGI_UTENTE_VENDITORE = "/aggiungi-utente-venditore";
 	public static final String AGGIUNGI_CATEGORIA = "/aggiungi-categoria";
 	public static final String AGGIUNGI_SETTORE ="/aggiungi-settore";
-
+	public static final String ELIMINA_LUOGO = "/luogo/elimina";
 	public static final String ELIMINA_MANIFESTAZIONE ="/elimina-manifestazione";
 	public static final String ELIMINA_EVENTO="/elimina-evento";
 
