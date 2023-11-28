@@ -14,7 +14,7 @@ public interface PrezzoSettoreEventoServiceDef {
     PrezzoSettoreEventoMicroDTO findPSEById(Long idPrezzoSettoreEvento);
 
     List<PrezzoSettoreEvento> findByEventiIds(List<Long> ids);
-    PrezzoSettoreEventoMicroDTO findByIdEvento(long idEvento);
+    List<PrezzoSettoreEventoMicroDTO> findByEventiIdsList(List<Long> ids);
     List<PrezzoSettoreEvento> findAllByIdEvento(long idEvento);
 
     List<PrezzoSettoreEventoMicroDTO> findAllPSEByIdEvento(long idEvento);

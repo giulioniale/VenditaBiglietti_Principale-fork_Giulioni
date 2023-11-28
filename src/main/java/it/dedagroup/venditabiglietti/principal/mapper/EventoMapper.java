@@ -11,6 +11,8 @@ import it.dedagroup.venditabiglietti.principal.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,16 @@ public class EventoMapper {
     @Autowired
     PrezzoSettoreEventoMapper mapper;
 
+    public AddEventoResponse toAddEventoResponse(EventoMicroDTO eventoDTO, String nomeManifestazione, String viaLuogo){
+        AddEventoResponse response = new AddEventoResponse();
+        response.setId(eventoDTO.getId());
+        response.setData(eventoDTO.getData());
+        response.setOra(eventoDTO.getOra());
+        response.setDescrizione(eventoDTO.getDescrizione());
+        response.setNomeManifestazione(nomeManifestazione);
+        response.setViaLuogo(viaLuogo);
+        return response;
+    }
     public EventoDTOResponse toEventoDTOResponse(Evento ev){
         EventoDTOResponse evDTOResp = new EventoDTOResponse();
         evDTOResp.setId(ev.getId());
@@ -30,17 +42,17 @@ public class EventoMapper {
         evDTOResp.setIdManifestazione(ev.getManifestazione().getId());
         return evDTOResp;
     }
-    
+
     public EventoDTOResponse fromAddEventoDTORequestToEventoDTOResponse(AddEventoDTORequest request, Utente u) {
     	EventoDTOResponse eventoDTO = new EventoDTOResponse();
-    	eventoDTO.setData(request.getData());
-    	eventoDTO.setOra(request.getOra());
+    	eventoDTO.setData(LocalDate.parse(request.getData()));
+    	eventoDTO.setOra(LocalTime.parse(request.getOra()));
     	eventoDTO.setDescrizione(request.getDescrizione());
     	eventoDTO.setIdManifestazione(request.getIdManifestazione());
     	eventoDTO.setIdLuogo(request.getIdLuogo());
     	return eventoDTO;
     }
-    
+
     public EventoDTOResponse fromMicroDTOtoEventoDTOResponse(EventoMicroDTO request) {
     	EventoDTOResponse eventoDTO = new EventoDTOResponse();
     	eventoDTO.setId(request.getId());

@@ -17,6 +17,8 @@ public interface EventoServiceDef {
     public List<EventoMicroDTO> trovaEventiFuturi();
     public List<EventoMicroDTO> findAllByManifestazioneId(long id_manifestazione);
     
-    public EventoMicroDTO save (AddEventoDTORequest request); 
+    public void save (AddEventoDTORequest request); 
     public EventoMicroDTO findById(long idEvento);
+
+    public EventoMicroDTO findByDescrizione(String descrizione);
 }

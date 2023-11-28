@@ -37,12 +37,17 @@ private String servicePath="http://localhost:8081/evento/";
 
     @Override
     public EventoMicroDTO findById(long idEvento) {
-        return callGet(servicePath+"/id/"+idEvento,idEvento,EventoMicroDTO.class);
+        return callGet(servicePath+"id/"+idEvento,idEvento,EventoMicroDTO.class);
     }
 
-	@Override
-	public EventoMicroDTO save(AddEventoDTORequest request) {
-		return callGet(servicePath+"/salva/"+ request, null, EventoMicroDTO.class);
+    @Override
+    public EventoMicroDTO findByDescrizione(String descrizione) {
+        return callPost(servicePath+"trovaPerDescrizione?descrizione="+descrizione,descrizione,EventoMicroDTO.class);
+    }
+
+    @Override
+	public void save(AddEventoDTORequest request) {
+		callPost(servicePath+"salva", request, Void.class);
 	}
 
 	@Override
