@@ -1,5 +1,4 @@
 package it.dedagroup.venditabiglietti.principal.serviceimpl;
-
 import it.dedagroup.venditabiglietti.principal.dto.response.LuogoMicroDTO;
 import it.dedagroup.venditabiglietti.principal.model.Luogo;
 import it.dedagroup.venditabiglietti.principal.service.GeneralCallService;
@@ -97,7 +96,7 @@ public class LuogoServiceImpl implements LuogoServiceDef, GeneralCallService {
     }
 	@Override
 	public List<LuogoMicroDTO> filtraLuoghiMap(Map<String, String> mapLuogo) {
-		return callGetForList(pathLuogo, mapLuogo, LuogoMicroDTO[].class);
+		return callPostForList(pathLuogo+"filtroLuogoMap", mapLuogo, LuogoMicroDTO[].class);
 	}
 
 
