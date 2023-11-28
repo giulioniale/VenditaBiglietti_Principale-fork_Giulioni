@@ -29,12 +29,12 @@ public class PrezzoSettoreEventoServiceImpl implements PrezzoSettoreEventoServic
     @Override
     public List<PrezzoSettoreEvento> findByEventiIds(List<Long> ids) {
         String mioPath = path+"ids-evento";
-        return callGetForList(mioPath, ids, PrezzoSettoreEvento[].class);
+        return callPostForList(mioPath, ids, PrezzoSettoreEvento[].class);
     }
 
     @Override
     public List<PrezzoSettoreEventoMicroDTO> findByEventiIdsList(List<Long> ids) {
-        return callGetForList(path+"/ids-evento",ids,PrezzoSettoreEventoMicroDTO[].class);
+        return callPostForList(path+"/ids-evento",ids,PrezzoSettoreEventoMicroDTO[].class);
     }
 
     @Override
