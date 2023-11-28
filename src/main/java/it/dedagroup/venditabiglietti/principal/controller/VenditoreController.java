@@ -160,6 +160,4 @@ public class VenditoreController {
 		return ResponseEntity.ok(vendFac.setPrezzoSettoreEvento(request, ((Utente)upat.getPrincipal())));
 	}
 
-	 */
-
 }
