@@ -1,5 +1,6 @@
 package it.dedagroup.venditabiglietti.principal.mapper;
 
+import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.model.Evento;
 import it.dedagroup.venditabiglietti.principal.model.Luogo;
@@ -29,6 +30,27 @@ public class EventoMapper {
         evDTOResp.setIdManifestazione(ev.getManifestazione().getId());
         return evDTOResp;
     }
+    
+    public EventoDTOResponse fromAddEventoDTORequestToEventoDTOResponse(AddEventoDTORequest request, Utente u) {
+    	EventoDTOResponse eventoDTO = new EventoDTOResponse();
+    	eventoDTO.setData(request.getData());
+    	eventoDTO.setOra(request.getOra());
+    	eventoDTO.setDescrizione(request.getDescrizione());
+    	eventoDTO.setIdManifestazione(request.getIdManifestazione());
+    	eventoDTO.setIdLuogo(request.getIdLuogo());
+    	return eventoDTO;
+    }
+    
+    public EventoDTOResponse fromMicroDTOtoEventoDTOResponse(EventoMicroDTO request) {
+    	EventoDTOResponse eventoDTO = new EventoDTOResponse();
+    	eventoDTO.setId(request.getId());
+    	eventoDTO.setData(request.getData());
+    	eventoDTO.setOra(request.getOra());
+    	eventoDTO.setDescrizione(request.getDescrizione());
+    	eventoDTO.setIdManifestazione(request.getIdManifestazione());
+    	eventoDTO.setIdLuogo(request.getIdLuogo());
+    	return eventoDTO;
+    }
 
     public List<EventoDTOResponse> toEventoDTOResponseList(List<Evento> eventi){
         return eventi.stream().map(this::toEventoDTOResponse).toList();
@@ -42,7 +64,7 @@ public class EventoMapper {
                                                                     )).toList();
     }
 
-
+    
 
     public Evento toEvento(EventoMicroDTO request, Manifestazione m, Luogo l, List<PrezzoSettoreEventoMicroDTO> pse){
         Evento e=new Evento();

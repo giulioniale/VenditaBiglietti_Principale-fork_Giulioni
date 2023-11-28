@@ -4,6 +4,7 @@ package it.dedagroup.venditabiglietti.principal.serviceimpl;
 import java.util.List;
 
 import it.dedagroup.venditabiglietti.principal.dto.response.EventoMicroDTO;
+import it.dedagroup.venditabiglietti.principal.dto.request.AddEventoDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.request.EventiFiltratiDTORequest;
 import it.dedagroup.venditabiglietti.principal.dto.response.EventiFiltratiDTOResponse;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,17 @@ private String servicePath="http://localhost:8081/evento/";
     public EventoMicroDTO findById(long idEvento) {
         return callGet(servicePath+"/id/"+idEvento,idEvento,EventoMicroDTO.class);
     }
+
+	@Override
+	public EventoMicroDTO save(AddEventoDTORequest request) {
+		return callGet(servicePath+"/salva/"+ request, null, EventoMicroDTO.class);
+	}
+
+	@Override
+	public void deleteEvento(long idEvento) {
+		callPost(servicePath+"/cancella/"+idEvento, null, EventoMicroDTO.class);
+	}
+    
+    
 
 }
