@@ -179,6 +179,6 @@ public class VenditoreFacade implements GeneralCallService{
 
         PrezzoSettoreEventoMicroDTO pseDTOmodificato = prezzoSettoreEventoServiceDef.findPSEById(pseDTO.getId());
         return prezzoSettoreEventoMapper.toPseDTOResponse(pseDTOmodificato,eventoDTO.getDescrizione(),settoreDTO.getNome());
-    }
-   
+    }   
 }
+

@@ -220,7 +220,7 @@ public class VenditoreController {
 	public ResponseEntity<PseDTOResponse> setPrezzoSettoreEvento(@RequestBody @Valid ModifyPSEDTORequest request, UsernamePasswordAuthenticationToken upat) {
 		return ResponseEntity.ok(vendFac.setPrezzoSettoreEvento(request, ((Utente)upat.getPrincipal())));
 	}
-	
+
 	@Operation(summary = "metodo per cerlare una lista di luoghi inserendo per ogni attributo una chiave valore(String) e un valore(String)",
 			description = "in questo metodo inserendo attributo di luogo (utilizzando un Map) una chiave ed un valore entrambe String, ci ritornerà una Lista di Luoghi da noi selezionati, solo se l'utente sia un venditore")
 	@ApiResponses(value = {
