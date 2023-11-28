@@ -16,7 +16,5 @@ public class AddManifestazioneDTORequest {
     @Positive(message = "Inserire un id valido positivo")
     @Min(value = 1, message = "Inserire un id maggiore o uguale a 1: ID Categoria")
     private long idCategoria;
-    @Positive(message = "Inserire un id valido positivo")
-    @Min(value = 1, message = "Inserire un id maggiore o uguale a 1: ID Utente")
     private long idUtente;
 }
