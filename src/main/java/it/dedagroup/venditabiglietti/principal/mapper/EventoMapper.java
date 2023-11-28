@@ -105,4 +105,23 @@ public class EventoMapper {
         }
         return responseList;
     }
+
+    public EventiFiltratiDTOResponse toEventoFiltratoDTOResponse(MostraEventiFuturiDTOResponse inputResponse){
+        EventiFiltratiDTOResponse outputResponse=new EventiFiltratiDTOResponse();
+        outputResponse.setDataEvento(inputResponse.getDataEvento());
+        outputResponse.setOraEvento(inputResponse.getOrarioEvento());
+        outputResponse.setDescrizioneEvento(inputResponse.getNomeEvento());
+        outputResponse.setProvincia(inputResponse.getProvincia());
+        outputResponse.setComune(inputResponse.getComune());
+        outputResponse.setNomeCategoria("");
+        return outputResponse;
+    }
+
+    public List<EventiFiltratiDTOResponse> toEventiFiltratiDTOResponse (List<MostraEventiFuturiDTOResponse> listaEventiFuturiConBiglietti ){
+        return listaEventiFuturiConBiglietti.stream().map(this::toEventoFiltratoDTOResponse).toList();
+    }
+
+
+
+
 }

@@ -5,9 +5,11 @@ import it.dedagroup.venditabiglietti.principal.dto.response.*;
 import it.dedagroup.venditabiglietti.principal.dto.response.EventiFiltratiDTOResponse;
 import it.dedagroup.venditabiglietti.principal.dto.response.EventoDTOResponse;
 import it.dedagroup.venditabiglietti.principal.mapper.EventoMapper;
+import it.dedagroup.venditabiglietti.principal.mapper.LuogoMapper;
 import it.dedagroup.venditabiglietti.principal.mapper.UtenteMapper;
 import it.dedagroup.venditabiglietti.principal.model.*;
 import it.dedagroup.venditabiglietti.principal.service.*;
+import it.dedagroup.venditabiglietti.principal.util.Contatore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class GeneralFacade implements GeneralCallService {
     @Autowired
     EventoMapper evMap;
     @Autowired
+    LuogoMapper lMap;
+    @Autowired
     UtenteMapper uMap;
     @Autowired
     PrezzoSettoreEventoServiceDef pseServ;
@@ -38,6 +42,10 @@ public class GeneralFacade implements GeneralCallService {
     BigliettoServiceDef bServ;
     @Autowired
     SettoreServiceDef settServ;
+    @Autowired
+    CategoriaServiceDef cServ;
+    @Autowired
+    Contatore contatoreUtils;
 
     private final String pathEvento = "http://localhost:8081/evento";
     private final String pathLuogo = "http://localhost:8088/luogo";
@@ -49,7 +57,6 @@ public class GeneralFacade implements GeneralCallService {
         uServ.aggiungiUtente(uNew);
     }
 
-    // TODO valutare sui cicli nestati se fare le lambda
     public List<MostraEventiFuturiDTOResponse> trovaEventiFuturiConBiglietti() {
         List<EventoMicroDTO> eventiFuturi = eServ.trovaEventiFuturi();
         List<MostraEventiFuturiDTOResponse> listaEventiFuturiResponse = new ArrayList<>();
@@ -92,79 +99,44 @@ public class GeneralFacade implements GeneralCallService {
     }
 
     public List<EventiFiltratiDTOResponse> eventiFiltrati(EventiFiltratiDTORequest request) {
-        List<Evento> eventiCriteria = callPostForList(pathEvento + "/filtraEventi", request.getRequestEventi(), Evento[].class);
-        List<Luogo> luoghiCriteria = callPostForList(pathLuogo + "/filtroLuogo", request.getRequestLuoghi(), Luogo[].class);
-        List<Categoria> categorieCriteria = callPostForList(pathCategoria + "/filtraCategorie", request.getRequestCategoria(), Categoria[].class);
-        List<Manifestazione> manifestazioneCriteria = callPostForList(pathManifestazione + "/filtraManifestazioni", request.getRequestManifestazione(), Manifestazione[].class);
-
-        // Creare una lista di EventiFiltratiDTOResponse
+        List<EventoMicroDTO> eventiCriteria= callPostForList(pathEvento + "/filtraEventi", request.getRequestEventi(), EventoMicroDTO[].class);
+        List<LuogoMicroDTO> luoghiCriteria = callPostForList(pathLuogo + "/filtroLuogo", request.getRequestLuoghi(), LuogoMicroDTO[].class);
+        List<CategoriaMicroDTO> categorieCriteria = callPostForList(pathCategoria + "/filtraCategorie", request.getRequestCategoria(), CategoriaMicroDTO[].class);
+        List<ManifestazioneMicroDTO> manifestazioneCriteria = callPostForList(pathManifestazione + "/filtraManifestazioni", request.getRequestManifestazione(), ManifestazioneMicroDTO[].class);
         List<EventiFiltratiDTOResponse> eventiFiltrati = new ArrayList<>();
-
-        // Creare un EventiFiltratiDTOResponse parziale
-        EventiFiltratiDTOResponse eventiFiltratiDTOResponse = new EventiFiltratiDTOResponse();
-
-        // Chiamare la funzione ricorsiva con gli indici iniziali
-        filtraEventiFiltratiRicorsivo(eventiCriteria, luoghiCriteria, categorieCriteria, manifestazioneCriteria, 0, 0, 0, 0, eventiFiltrati, eventiFiltratiDTOResponse);
-
-        // Restituire la lista di EventiFiltratiDTOResponse
+        EventiFiltratiDTOResponse response=new EventiFiltratiDTOResponse();
+        for (EventoMicroDTO evento:eventiCriteria){
+            long idLuogo=evento.getIdLuogo();
+            long idManifestazione=evento.getIdManifestazione();
+            ManifestazioneMicroDTO manifestazioneMicroEvento=mServ.findById(idManifestazione);
+            LuogoMicroDTO luogoMicroEvento=lServ.findLuogoById(idLuogo);
+            long idCategoria=manifestazioneMicroEvento.getIdCategoria();
+            CategoriaMicroDTO categoriaMicroEvento=cServ.findById(idCategoria);
+            int capienza=contatoreUtils.contaCapienzaSingola(evento);
+            if (luoghiCriteria.contains(luogoMicroEvento)&&categorieCriteria.contains(categoriaMicroEvento)&&manifestazioneCriteria.contains(manifestazioneMicroEvento)){
+                response.setDataEvento(evento.getData());
+                response.setOraEvento(evento.getOra());
+                response.setDescrizioneEvento(evento.getDescrizione());
+                response.setProvincia(luogoMicroEvento.getProvincia());
+                response.setComune(luogoMicroEvento.getComune());
+                response.setNomeManifestazione(manifestazioneMicroEvento.getNome());
+                response.setNomeCategoria(categoriaMicroEvento.getNome());
+            }
+            if (response.getNomeCategoria()==null||
+                    response.getNomeManifestazione()==null||
+                    response.getComune()==null||
+                    response.getProvincia()==null||
+                    response.getDataEvento()==null||
+                    response.getOraEvento()==null||
+                    response.getDescrizioneEvento()==null && capienza<=0){
+                response=new EventiFiltratiDTOResponse();
+            } else {
+                eventiFiltrati.add(response);
+                response=new EventiFiltratiDTOResponse();
+            }
+        }
         return eventiFiltrati;
     }
 
-    // Funzione ricorsiva che esplora tutte le combinazioni possibili delle 4 request
-    public void filtraEventiFiltratiRicorsivo(List<Evento> eventiCriteria, List<Luogo> luoghiCriteria, List<Categoria> categorieCriteria, List<Manifestazione> manifestazioneCriteria, int indiceEvento, int indiceLuogo, int indiceCategoria, int indiceManifestazione, List<EventiFiltratiDTOResponse> eventiFiltrati, EventiFiltratiDTOResponse eventiFiltratiDTOResponse) {
-        // Se il EventiFiltratiDTOResponse parziale è completo, lo aggiunge alla lista finale
-        if (eventiFiltratiDTOResponse.getNomeManifestazione() != null && eventiFiltratiDTOResponse.getNomeCategoria() != null && eventiFiltratiDTOResponse.getDescrizioneEvento() != null && eventiFiltratiDTOResponse.getDataEvento() != null && eventiFiltratiDTOResponse.getOraEvento() != null && eventiFiltratiDTOResponse.getComune() != null && eventiFiltratiDTOResponse.getProvincia() != null) {
-            eventiFiltrati.add(eventiFiltratiDTOResponse);
-            return;
-        }
 
-        // Itera su ogni lista di entità e aggiunge l'elemento corrispondente al EventiFiltratiDTOResponse parziale
-        for (int i = indiceEvento; i < eventiCriteria.size(); i++) {
-            Evento evento = eventiCriteria.get(i);
-            // Controlla che gli id non siano nulli o zero
-            if (evento.getManifestazione().getId() != 0 && evento.getManifestazione().getCategoria().getId() != 0) {
-                // Trova la manifestazione e la categoria corrispondenti agli id
-                Manifestazione manifestazione = manifestazioneCriteria.stream().filter(m -> m.getId()==(evento.getManifestazione().getId())).findFirst().orElse(null);
-                Categoria categoria = categorieCriteria.stream().filter(c -> c.getId()==(evento.getManifestazione().getCategoria().getId())).findFirst().orElse(null);
-                // Se la manifestazione e la categoria esistono, aggiunge i loro nomi al EventiFiltratiDTOResponse parziale
-                if (manifestazione != null && categoria != null) {
-                    eventiFiltratiDTOResponse.setNomeManifestazione(manifestazione.getNome());
-                    eventiFiltratiDTOResponse.setNomeCategoria(categoria.getNome());
-                }
-            }
-            eventiFiltratiDTOResponse.setDescrizioneEvento(evento.getDescrizione());
-            eventiFiltratiDTOResponse.setDataEvento(evento.getData());
-            eventiFiltratiDTOResponse.setOraEvento(evento.getOra());
-            // Chiama se stessa con l'indice incrementato e il EventiFiltratiDTOResponse parziale aggiornato
-            filtraEventiFiltratiRicorsivo(eventiCriteria, luoghiCriteria, categorieCriteria, manifestazioneCriteria, i + 1, indiceLuogo, indiceCategoria, indiceManifestazione, eventiFiltrati, eventiFiltratiDTOResponse);
-        }
-
-        for (int j = indiceLuogo; j < luoghiCriteria.size(); j++) {
-            Luogo luogo = luoghiCriteria.get(j);
-            eventiFiltratiDTOResponse.setComune(luogo.getComune());
-            eventiFiltratiDTOResponse.setProvincia(luogo.getProvincia());
-            // Chiama se stessa con l'indice incrementato e il EventiFiltratiDTOResponse parziale aggiornato
-            filtraEventiFiltratiRicorsivo(eventiCriteria, luoghiCriteria, categorieCriteria, manifestazioneCriteria, indiceEvento, j + 1, indiceCategoria, indiceManifestazione, eventiFiltrati, eventiFiltratiDTOResponse);
-        }
-
-        for (int k = indiceCategoria; k < categorieCriteria.size(); k++) {
-            Categoria categoria = categorieCriteria.get(k);
-            // Controlla che il nome della categoria non sia nullo
-            if (categoria.getNome() != null) {
-                eventiFiltratiDTOResponse.setNomeCategoria(categoria.getNome());
-            }
-            // Chiama se stessa con l'indice incrementato e il EventiFiltratiDTOResponse parziale aggiornato
-            filtraEventiFiltratiRicorsivo(eventiCriteria, luoghiCriteria, categorieCriteria, manifestazioneCriteria, indiceEvento, indiceLuogo, k + 1, indiceManifestazione, eventiFiltrati, eventiFiltratiDTOResponse);
-        }
-
-        for (int l = indiceManifestazione; l < manifestazioneCriteria.size(); l++) {
-            Manifestazione manifestazione = manifestazioneCriteria.get(l);
-            // Controlla che il nome della manifestazione non sia nullo
-            if (manifestazione.getNome() != null) {
-                eventiFiltratiDTOResponse.setNomeManifestazione(manifestazione.getNome());
-            }
-            // Chiama se stessa con l'indice incrementato e il EventiFiltratiDTOResponse parziale aggiornato
-            filtraEventiFiltratiRicorsivo(eventiCriteria, luoghiCriteria, categorieCriteria, manifestazioneCriteria, indiceEvento, indiceLuogo, indiceCategoria, l + 1, eventiFiltrati, eventiFiltratiDTOResponse);
-        }
-    }
 }
