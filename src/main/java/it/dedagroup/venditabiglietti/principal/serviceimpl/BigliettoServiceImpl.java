@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static it.dedagroup.venditabiglietti.principal.util.BigliettoUtilPath.*;
 
@@ -85,4 +86,8 @@ public class BigliettoServiceImpl implements BigliettoServiceDef, GeneralCallSer
         return callPostForList(FIND_ALL_BY_ID_PREZZO_SETTORE_EVENTO_IN_IDS,idsPrezzoSettoreEvento,BigliettoMicroDTO[].class);
     }
 
+    @Override
+    public List<BigliettoMicroDTO> findAllBigliettiCriteria(Map<String, String> criteria) {
+        return callPostForList(FIND_ALL_BY_CRITERIA, criteria,BigliettoMicroDTO[].class);
+    }
 }

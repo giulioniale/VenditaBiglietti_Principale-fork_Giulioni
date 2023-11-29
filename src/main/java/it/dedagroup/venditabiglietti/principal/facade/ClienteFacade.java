@@ -8,7 +8,6 @@ import it.dedagroup.venditabiglietti.principal.model.PrezzoSettoreEvento;
 import it.dedagroup.venditabiglietti.principal.model.Utente;
 import it.dedagroup.venditabiglietti.principal.service.BigliettoServiceDef;
 import it.dedagroup.venditabiglietti.principal.service.PrezzoSettoreEventoServiceDef;
-import it.dedagroup.venditabiglietti.principal.service.UtenteServiceDef;
 import it.dedagroup.venditabiglietti.principal.serviceimpl.UtenteServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -67,5 +67,9 @@ public class ClienteFacade {
             return bigliettoService.saveBiglietto(request);
         } else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'id deve essere maggiore di zero.");
+    }
+
+    public List<BigliettoMicroDTO> findAllBigliettiCriteria (Map<String, String> criteria){
+        return bigliettoService.findAllBigliettiCriteria(criteria);
     }
 }

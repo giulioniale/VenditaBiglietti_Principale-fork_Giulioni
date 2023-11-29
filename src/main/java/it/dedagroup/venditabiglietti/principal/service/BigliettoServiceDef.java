@@ -5,6 +5,7 @@ import it.dedagroup.venditabiglietti.principal.dto.request.ModifyBigliettoDTOReq
 import it.dedagroup.venditabiglietti.principal.dto.response.BigliettoMicroDTO;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface BigliettoServiceDef {
     //TODO Discutere della distribuzione dei metodi nel service layer
@@ -25,4 +26,6 @@ public interface BigliettoServiceDef {
     public List<Double> findDistinctPrezzoBigliettoByIdPrezzoSettoreEvento(long id_prezzoSettoreEvento);
 
     public List<BigliettoMicroDTO> findAllByIdPrezzoSettoreEventoIn(List<Long> idsPrezzoSettoreEvento);
+
+    List<BigliettoMicroDTO> findAllBigliettiCriteria(Map<String, String> criteria);
 }

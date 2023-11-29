@@ -28,4 +28,11 @@ public class UtilPath {
 	public static final String EVENTI_FUTURI_CON_BIGLIETTI = "/trovaEventiFuturiConBiglietti";
 	public static final String FILTRA_EVENTI = "/filtraEventi";
 
+	//----------------------------------------CLIENTE LOGGATO-------------------------------------------------/
+	public static final String CLIENTE_LOGGATO_PATH = "/cliente";
+	public static final String CRONOLOGIA_ACQUISTI = "/cronologia-acquisti/";
+	public static final String DISATTIVA_UTENTE = "/disattiva/";
+	public static final String MODIFICA_UTENTE = "/modifica";
+	public static final String ACQUISTA_BIGLIETTO = "/acquistaBiglietto/{idPrezzoSettoreEvento}";
+	public static final String FIND_ALL_BIGLIETI_BY_CRITERIA = "/findByBigliettoField";
 }
